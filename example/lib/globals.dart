@@ -17,7 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
 
 class Globals {
-  static final buildVersion = "Ver 1.1.3";
+  static final buildVersion = "Ver 1.1.4";
   static final windowTitle = "Morpheus Launcher";
   static final borderRadius = 14.0;
 
@@ -267,7 +267,7 @@ class LauncherUtils {
           final queryParameters = {
             'java_version': "$requiredJavaVersion",
             'os': Platform.operatingSystem,
-            'arch': Platform.environment['PROCESSOR_ARCHITECTURE'],
+            'arch': Platform.version.contains("arm64") ? "aarch64" : "x86_64",
             'archive_type': 'zip',
             'java_package_type': 'jre',
             'latest': 'true',
