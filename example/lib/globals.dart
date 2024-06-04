@@ -5,8 +5,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
-import 'package:discord_rpc/discord_rpc_native.dart';
-import 'package:discord_rpc/model/discord_presence.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
 
 class Globals {
-  static final buildVersion = "Ver 1.1.4";
+  static final buildVersion = "Ver 1.1.5";
   static final windowTitle = "Morpheus Launcher";
   static final borderRadius = 14.0;
 
@@ -39,8 +37,6 @@ class Globals {
   static late List<Account> accounts = readAccountListFromJson("${LauncherUtils.getApplicationFolder("morpheus")}/accounts.json");
   static late List<String> pinnedVersions = [];
   static late List<String> WindowThemes = [];
-
-  static dynamic discord = Platform.isMacOS ? null : DiscordRPC(applicationId: '1061674345405100082');
 
   static int NavSelected = 0, AccountSelected = 0;
   static bool isLoggedIn = false;
@@ -354,29 +350,6 @@ class LauncherUtils {
     if (Globals.morpheusAuthResponse != null && Globals.morpheusAuthResponse["message"] != null) return true;
 
     return false;
-  }
-
-  // Aggiorna lo stato del rich presence
-  static updateRPC(dynamic status, dynamic details) {
-    if (Globals.discord != null) {
-      try {
-        if (status != null) {
-          Globals.discord.updatePresence(
-            DiscordPresence(
-              state: status,
-              details: details,
-              startTimeStamp: DateTime.now().millisecondsSinceEpoch,
-              largeImageKey: 'morpheus',
-              largeImageText: 'morpheuslauncher.it',
-            ),
-          );
-        } else {
-          Globals.discord.clearPresence();
-        }
-      } catch (e) {
-        print(e);
-      }
-    }
   }
 }
 

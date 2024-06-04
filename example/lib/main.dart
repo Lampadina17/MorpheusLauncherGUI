@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
-import 'package:discord_rpc/discord_rpc_native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -16,12 +15,6 @@ import 'package:system_theme/system_theme.dart';
 import 'utils/morpheus_utils.dart';
 
 Future<void> main() async {
-  try {
-    DiscordRPC.initialize();
-  } catch (error) {
-    print(error);
-  }
-
   if (Platform.isWindows) {
     int? buildNumber = getBuildNumber(Platform.operatingSystemVersion);
 

@@ -42,7 +42,6 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    if (Globals.discord != null) Globals.discord.start(autoRegister: true);
     rebuild();
   }
 
@@ -768,10 +767,8 @@ class _MainPageState extends State<MainPage> {
                         List<String> args = [];
 
                         if (gameType.contains(AppLocalizations.of(context)!.vanilla_release_title)) {
-                          gameType = "release"; // Latest Vanilla
                           gameVersion = "latest";
                         } else if (gameType.contains(AppLocalizations.of(context)!.vanilla_snapshot_title)) {
-                          gameType = "snapshot"; // Latest Snapshot
                           gameVersion = "snapshot";
                         } else if (gameType.toLowerCase().contains("fabric") || gameVersion.toLowerCase().contains("fabric")) {
                           var fabricVersion = Globals.fabricLoaderVersionsResponse[0]["version"];
@@ -780,15 +777,12 @@ class _MainPageState extends State<MainPage> {
                           } else {
                             gameVersion = "fabric-loader-$fabricVersion-$realGameVersion";
                           }
-                          gameType = "fabric";
                           isModded = true;
                         } else if (gameVersion.toLowerCase().contains("optifine")) {
                           realGameVersion = gameVersion.split("-")[0]; // Optifine
-                          gameType = "optifine";
                           isModded = true;
                         } else if (gameVersion.toLowerCase().contains("forge")) {
                           realGameVersion = gameVersion.split("-")[0]; // Forge
-                          gameType = "forge";
                           isModded = true;
                           // Workaround per la 1.6.4
                           args.add("-Dfml.ignoreInvalidMinecraftCertificates=true");
@@ -806,8 +800,6 @@ class _MainPageState extends State<MainPage> {
                             });
                           }
                         }
-
-                        LauncherUtils.updateRPC("Playing: ${gameType} ${realGameVersion}", Globals.buildVersion);
 
                         // Workaround per colpa di mojang di merda
                         var isPremium = AccountUtils.getAccount()?.isPremium;
@@ -872,7 +864,6 @@ class _MainPageState extends State<MainPage> {
                             () => Navigator.pop(context),
                           );
                         }
-                        LauncherUtils.updateRPC(null, Globals.buildVersion);
                       } else {
                         WidgetUtils.showMessageDialog(
                           context,
@@ -1114,7 +1105,7 @@ class _MainPageState extends State<MainPage> {
                                         if (Globals.hwid != null) {
                                           // se ci riesce fa la procedura automatica, altrimenti se fallisce ti fa fare quella semi-automatica
                                           Globals.consolecontroller.text += "[LAUNCHER]: ${await LoginUtils.resetHwid(context, Globals.hwid)}\n";
-                                          runMorpheusClients(productName, productVersion, gameVersion, productId);
+                                          runMorpheusClients(gameVersion, productId);
                                         } else {
                                           // apre il launcher con popup
                                           await Process.start(
@@ -1159,7 +1150,7 @@ class _MainPageState extends State<MainPage> {
                                                 onPressed: () async {
                                                   Navigator.pop(context);
                                                   Globals.consolecontroller.text += "[LAUNCHER]: ${await LoginUtils.resetHwid(context, Globals.hwidcontroller.text)}\n";
-                                                  runMorpheusClients(productName, productVersion, gameVersion, productId);
+                                                  runMorpheusClients(gameVersion, productId);
                                                 },
                                               ),
                                             ],
@@ -1248,16 +1239,11 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  void runMorpheusClients(dynamic productName, dynamic productVersion, dynamic gameVersion, dynamic productId) async {
+  void runMorpheusClients(dynamic gameVersion, dynamic productId) async {
     if (Platform.isWindows) {
       final injectorFile = File("${LauncherUtils.getApplicationFolder("morpheus")}/morpheus_guard_init.exe");
       if (injectorFile.existsSync()) await Process.start(injectorFile.path, []); // Avvia l'injector se è presente nella cartella
     }
-
-    LauncherUtils.updateRPC(
-      "Playing: ${productName} ${productVersion}",
-      "${Globals.buildVersion} (${Globals.morpheusAuthResponse["data"]["username"]})",
-    );
 
     Process process = await Process.start(
       Globals.javapathcontroller.text,
@@ -1287,7 +1273,6 @@ class _MainPageState extends State<MainPage> {
       process.stderr.transform(systemEncoding.decoder).forEach((line) {});
     }
     await process.exitCode;
-    LauncherUtils.updateRPC(null, Globals.buildVersion);
   }
 
   /////////// MODDING //////////////
@@ -1830,7 +1815,7 @@ class _MainPageState extends State<MainPage> {
           child: GestureDetector(
             child: Text(
               "build: ${Globals.buildVersion} on ${extractPlatformInfo(Platform.version)} - morpheuslauncher.it (cc by-nc-sa) 2023-2024",
-              style: WidgetUtils.customTextStyle(14, FontWeight.w500, ColorUtils.secondaryFontColor),
+              style: WidgetUtils.customTextStyle(12, FontWeight.w500, ColorUtils.secondaryFontColor),
             ),
             onTap: () {
               WidgetUtils.showMessageDialog(
@@ -2553,7 +2538,6 @@ class WidgetUtils {
                   ),
                   onPressed: () {
                     process.kill();
-                    LauncherUtils.updateRPC(null, Globals.buildVersion);
                     Globals.consolecontroller.text += "[LAUNCHER]: ${AppLocalizations.of(context)!.console_game_kill_msg}\n";
                     Navigator.pop(context);
                     Navigator.pop(context);
