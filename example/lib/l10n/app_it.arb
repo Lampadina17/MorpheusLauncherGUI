@@ -24,10 +24,9 @@
   "modded_forge_download_available": "Forge disponibili per l'installazione",
   "modded_optifine_download_available": "Optifine disponibili per l'installazione",
 
-
   "settings_only_release_switch": "Mostra solo release",
   "settings_dark_mode_switch": "Usa tema scuro",
-  "settings_follow_system_color": "Usa il colore del sistema operativo",
+  "settings_follow_system_color": "Colore dettagli",
   "settings_check_java_title": "Il tuo java funziona?",
   "settings_check_java_yes": "Sì, il tuo java funziona",
   "settings_check_java_no": "No. perfavore seleziona il java adeguato per il tuo sistema",
@@ -39,8 +38,10 @@
   "settings_misc_label": "Varie",
   "settings_console_switch": "Mostra la console all'avvio del gioco",
   "settings_show_clients": "Mostra i prodotti morpheus",
+  "settings_custom_folder_title": "Cartella di gioco personalizzata",
+  "settings_custom_folder": "Cartella del gioco",
   "settings_credits_title": "Ringraziamenti",
-  "settings_credits_content": "Questo software è stato sviluppato utilizzando diverse librerie open source: \n\nmaterial_color_utilities, flutter_secure_storage, flutter_localization, cached_network_image, simple_3d_renderer, shared_preferences, flutter_markdown, dropdown_button2, bitsdojo_window, flutter_switch, url_launcher, system_theme, flutter_html, text_divider, file_picker, process_run, discord_rpc, http_parser, provider, archive, encrypt, crypto, image, http, intl, blur, cupertino_icons. \n\nRingraziamo sinceramente tutti coloro che hanno contribuito allo sviluppo di queste librerie, rendendo possibile la realizzazione di questo software.",
+  "settings_credits_content": "Questo software è stato sviluppato utilizzando diverse librerie open source: \n\nmaterial_color_utilities, flutter_secure_storage, flutter_localization, cached_network_image, simple_3d_renderer, shared_preferences, flutter_markdown, dropdown_button2, bitsdojo_window, flutter_switch, url_launcher, system_theme, flutter_html, text_divider, file_picker, process_run, file_selector, http_parser, provider, archive, encrypt, crypto, image, http, intl, blur, cupertino_icons. \n\nRingraziamo sinceramente tutti coloro che hanno contribuito allo sviluppo di queste librerie, rendendo possibile la realizzazione di questo software.",
 
   "account_skin_buy_game": "Acquista Minecraft",
   "account_skin_error_msg": "Solo gli account premium possono cambiare la skin.\nConsidera di comprare il gioco tramite minecraft.net",

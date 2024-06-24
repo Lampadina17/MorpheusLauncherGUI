@@ -95,12 +95,14 @@ class MyAppBodyState extends State<MyAppBody> {
     // legge i setting se esistono, in alternativa usa valori predefiniti
     Globals.showOnlyReleases = prefs.getBool('showOnlyReleases') ?? true;
     Globals.darkModeTheme = prefs.getBool('darkModeTheme') ?? false;
-    Globals.sysColorTheme = prefs.getBool('sysColorTheme') ?? false;
+    Globals.accentColor = prefs.getInt('accentColor') ?? 0;
     Globals.javaramcontroller.text = prefs.getString('javaRAM') ?? "1024";
     Globals.javapathcontroller.text = prefs.getString('javaPath') ?? "java";
     Globals.javaAdvSet = prefs.getBool('javaAdvSet') ?? false;
     Globals.javavmcontroller.text = prefs.getString('javaVMArgs') ?? "";
     Globals.javalaunchercontroller.text = prefs.getString('javaLauncherArgs') ?? "";
+    Globals.customFolderSet = prefs.getBool('customFolderSet') ?? false;
+    Globals.gamefoldercontroller.text = prefs.getString('gameFolderPath') ?? LauncherUtils.getApplicationFolder("minecraft");
     Globals.selectedWindowTheme = prefs.getString('themeSet') ?? getDefaultTheme();
     Globals.showConsole = prefs.getBool('showConsole') ?? true;
     Globals.showClients = prefs.getBool('showClients') ?? false;
@@ -111,12 +113,14 @@ class MyAppBodyState extends State<MyAppBody> {
     // scrive i setting con i valori predefiniti se non esistono
     if (!prefs.containsKey('showOnlyReleases')) prefs.setBool('showOnlyReleases', Globals.showOnlyReleases);
     if (!prefs.containsKey('darkModeTheme')) prefs.setBool('darkModeTheme', Globals.darkModeTheme);
-    if (!prefs.containsKey('sysColorTheme')) prefs.setBool('sysColorTheme', Globals.sysColorTheme);
+    if (!prefs.containsKey('accentColor')) prefs.setInt('accentColor', Globals.accentColor);
     if (!prefs.containsKey('javaRAM')) prefs.setString('javaRAM', Globals.javaramcontroller.text);
     if (!prefs.containsKey('javaPath')) prefs.setString('javaPath', Globals.javapathcontroller.text);
     if (!prefs.containsKey('javaAdvSet')) prefs.setBool('javaAdvSet', Globals.javaAdvSet);
     if (!prefs.containsKey('javaVMArgs')) prefs.setString('javaVMArgs', Globals.javavmcontroller.text);
     if (!prefs.containsKey('javaLauncherArgs')) prefs.setString('javaLauncherArgs', Globals.javalaunchercontroller.text);
+    if (!prefs.containsKey('customFolderSet')) prefs.setBool('customFolderSet', Globals.customFolderSet);
+    if (!prefs.containsKey('gameFolderPath')) prefs.setString('gameFolderPath', Globals.gamefoldercontroller.text);
     if (!prefs.containsKey('themeSet')) prefs.setString('themeSet', Globals.selectedWindowTheme);
     if (!prefs.containsKey('showConsole')) prefs.setBool('showConsole', Globals.showConsole);
     if (!prefs.containsKey('showClients')) prefs.setBool('showClients', Globals.showClients);

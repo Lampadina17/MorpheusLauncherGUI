@@ -8,6 +8,7 @@ import 'package:blur/blur.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
@@ -27,6 +28,7 @@ import 'package:morpheus_launcher_gui/views/widget_news.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_3d/simple_3d.dart';
 import 'package:simple_3d_renderer/simple_3d_renderer.dart';
+import 'package:system_theme/system_theme.dart';
 import 'package:text_divider/text_divider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:util_simple_3d/util_simple_3d.dart';
@@ -829,8 +831,8 @@ class _MainPageState extends State<MainPage> {
 
                         // Args normali
                         args.addAll([
-                          "-Duser.dir=${LauncherUtils.getApplicationFolder("minecraft")}",
-                          "-Djava.library.path=${LauncherUtils.getApplicationFolder("minecraft")}/versions/${gameVersion}/natives/",
+                          "-Duser.dir=${Globals.gamefoldercontroller.text}",
+                          "-Djava.library.path=${Globals.gamefoldercontroller.text}/versions/${gameVersion}/natives/",
                           ...LauncherUtils.buildJVMOptimizedArgs(Globals.javaramcontroller.text),
                           "-jar",
                           "${LauncherUtils.getApplicationFolder("morpheus")}/Launcher.jar",
@@ -843,6 +845,13 @@ class _MainPageState extends State<MainPage> {
                           "-minecraftUUID",
                           "${AccountUtils.getAccount()?.uuid}",
                         ]);
+
+                        if (Globals.customFolderSet) {
+                          args.addAll([
+                            "-gameFolder",
+                            "${Globals.gamefoldercontroller.text}",
+                          ]);
+                        }
 
                         var launcherSplit = Globals.javalaunchercontroller.text.split(" ");
                         if (Globals.javalaunchercontroller.text.isNotEmpty) args.addAll(launcherSplit);
@@ -1245,27 +1254,34 @@ class _MainPageState extends State<MainPage> {
       if (injectorFile.existsSync()) await Process.start(injectorFile.path, []); // Avvia l'injector se è presente nella cartella
     }
 
-    Process process = await Process.start(
-      Globals.javapathcontroller.text,
-      [
-        "-Duser.dir=${LauncherUtils.getApplicationFolder("minecraft")}",
-        "-Djava.library.path=${LauncherUtils.getApplicationFolder("minecraft")}/versions/${gameVersion}/natives/",
-        ...LauncherUtils.buildJVMOptimizedArgs(Globals.javaramcontroller.text),
-        "-XX:+DisableAttachMechanism",
-        "-jar",
-        "${LauncherUtils.getApplicationFolder("morpheus")}/Launcher.jar",
-        "-productID",
-        productId,
-        "-accessToken",
-        Globals.morpheusAuthResponse["data"]["accessToken"],
-        "-minecraftToken",
-        "${AccountUtils.getAccount()?.accessToken}",
-        "-minecraftUsername",
-        "${AccountUtils.getAccount()?.username}",
-        "-minecraftUUID",
-        "${AccountUtils.getAccount()?.uuid}",
-      ],
-    );
+    List<String> args = [];
+    args.addAll([
+      "-Duser.dir=${Globals.gamefoldercontroller.text}",
+      "-Djava.library.path=${Globals.gamefoldercontroller.text}/versions/${gameVersion}/natives/",
+      ...LauncherUtils.buildJVMOptimizedArgs(Globals.javaramcontroller.text),
+      "-XX:+DisableAttachMechanism",
+      "-jar",
+      "${LauncherUtils.getApplicationFolder("morpheus")}/Launcher.jar",
+      "-productID",
+      productId,
+      "-accessToken",
+      Globals.morpheusAuthResponse["data"]["accessToken"],
+      "-minecraftToken",
+      "${AccountUtils.getAccount()?.accessToken}",
+      "-minecraftUsername",
+      "${AccountUtils.getAccount()?.username}",
+      "-minecraftUUID",
+      "${AccountUtils.getAccount()?.uuid}",
+    ]);
+
+    if (Globals.customFolderSet) {
+      args.addAll([
+        "-gameFolder",
+        "${Globals.gamefoldercontroller.text}",
+      ]);
+    }
+
+    Process process = await Process.start(Globals.javapathcontroller.text, args);
     if (Globals.showConsole) {
       WidgetUtils.showConsole(context, process);
     } else {
@@ -1407,29 +1423,135 @@ class _MainPageState extends State<MainPage> {
           },
         ),
 
-        /** Setting per il colore di sistema */
-        WidgetUtils.buildSettingSwitchItem(
-          AppLocalizations.of(context)!.settings_follow_system_color,
-          "sysColorTheme",
-          Icons.color_lens,
-          ColorUtils.dynamicPrimaryForegroundColor,
-          ColorUtils.defaultShadowColor,
-          Globals.sysColorTheme,
-          (value) {
-            setState(() => Globals.sysColorTheme = value);
-            ColorUtils.reloadColors();
-
-            Window.setEffect(
-              effect: getWindowEffect(),
-              color: ColorUtils.dynamicBackgroundColor,
-              dark: Globals.darkModeTheme,
-            );
-            if (Platform.isMacOS) {
-              Window.overrideMacOSBrightness(
-                dark: Globals.darkModeTheme,
-              );
-            }
-          },
+        /** Setting per il colore */
+        WidgetUtils.buildSettingContainerItem(
+          Stack(
+            children: [
+              Row(
+                children: [
+                  Container(
+                    height: 55,
+                    width: 45,
+                    child: Center(
+                      child: Material(
+                        elevation: 10,
+                        color: Colors.transparent,
+                        shadowColor: ColorUtils.defaultShadowColor,
+                        borderRadius: BorderRadius.circular(10),
+                        child: Icon(
+                          Icons.color_lens,
+                          color: ColorUtils.primaryFontColor,
+                          size: 26,
+                        ),
+                      ),
+                    ),
+                  ),
+                  /** Nome del setting */
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.settings_follow_system_color,
+                          style: WidgetUtils.customTextStyle(16, FontWeight.w500, ColorUtils.primaryFontColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 18, 10, 0),
+                    child: Material(
+                      elevation: 15,
+                      color: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      // Globals.defaultShadowColor,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () async => {
+                              Globals.accentColor = 0,
+                              (await SharedPreferences.getInstance()).setInt('accentColor', Globals.accentColor),
+                              setState(() => {
+                                    ColorUtils.dynamicAccentColor = ColorUtils.getColorFromAccent(Globals.accentColor),
+                                  }),
+                              ColorUtils.reloadColors(),
+                              Window.setEffect(
+                                effect: getWindowEffect(),
+                                color: ColorUtils.dynamicBackgroundColor,
+                                dark: Globals.darkModeTheme,
+                              ),
+                              if (Platform.isMacOS) ...[
+                                Window.overrideMacOSBrightness(
+                                  dark: Globals.darkModeTheme,
+                                ),
+                              ],
+                            },
+                            child: Stack(
+                              children: [
+                                ColoredCircle(
+                                  size: 20,
+                                  color: SystemTheme.accentColor.light.withAlpha(200),
+                                  outlineColor: Globals.accentColor == 0 ? Colors.white : Colors.transparent,
+                                  outlineWidth: 2,
+                                  distance: 3,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(2, 5, 0, 0),
+                                  child: Text(
+                                    "OS",
+                                    style: WidgetUtils.customTextStyle(10, FontWeight.w100, Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          for (int i = 1; i <= 7; i++) ...[
+                            SizedBox(
+                              width: 2,
+                            ),
+                            GestureDetector(
+                              onTap: () async => {
+                                Globals.accentColor = i,
+                                (await SharedPreferences.getInstance()).setInt('accentColor', Globals.accentColor),
+                                setState(() => {
+                                      ColorUtils.dynamicAccentColor = ColorUtils.getColorFromAccent(Globals.accentColor),
+                                    }),
+                                ColorUtils.reloadColors(),
+                                Window.setEffect(
+                                  effect: getWindowEffect(),
+                                  color: ColorUtils.dynamicBackgroundColor,
+                                  dark: Globals.darkModeTheme,
+                                ),
+                                if (Platform.isMacOS) ...[
+                                  Window.overrideMacOSBrightness(
+                                    dark: Globals.darkModeTheme,
+                                  ),
+                                ],
+                              },
+                              child: ColoredCircle(
+                                size: 20,
+                                color: ColorUtils.getColorFromAccent(i),
+                                outlineColor: Globals.accentColor == i ? Colors.white : Colors.transparent,
+                                outlineWidth: 2,
+                                distance: 3,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
 
         /** Setting Tema */
@@ -1616,7 +1738,7 @@ class _MainPageState extends State<MainPage> {
                 Globals.javaAdvSet,
                 (value) => setState(() => Globals.javaAdvSet = value),
               ),
-              if (Globals.javaAdvSet)
+              if (Globals.javaAdvSet) ...[
                 Padding(
                   padding: EdgeInsets.fromLTRB(6, 0, 6, 4),
                   child: Column(
@@ -1794,6 +1916,63 @@ class _MainPageState extends State<MainPage> {
                     ],
                   ),
                 ),
+              ],
+            ],
+          ),
+        ),
+
+        /** Cartella di installazione */
+        WidgetUtils.buildSettingContainerItem(
+          Column(
+            children: [
+              WidgetUtils.buildSettingSwitchItem(
+                AppLocalizations.of(context)!.settings_custom_folder_title,
+                "customFolderSet",
+                Icons.folder,
+                Colors.transparent,
+                Colors.transparent,
+                Globals.customFolderSet,
+                (value) async => {
+                  setState(() => Globals.customFolderSet = value),
+                  if (!Globals.customFolderSet) ...[
+                    Globals.gamefoldercontroller.text = LauncherUtils.getApplicationFolder("minecraft"),
+                    await (await SharedPreferences.getInstance()).setString("gameFolderPath", Globals.gamefoldercontroller.text),
+                  ],
+                },
+              ),
+              if (Globals.customFolderSet) ...[
+                Padding(
+                  padding: EdgeInsets.fromLTRB(6, 0, 6, 4),
+                  child: WidgetUtils.buildSettingTextItem(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        WidgetUtils.buildButton(
+                          Icons.folder,
+                          ColorUtils.dynamicAccentColor,
+                          Colors.white,
+                          () async {
+                            final String? selectedDirectory = await getDirectoryPath();
+                            if (selectedDirectory != null) {
+                              Globals.gamefoldercontroller.text = selectedDirectory.replaceAll("\\", "/");
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              await prefs.setString("gameFolderPath", Globals.gamefoldercontroller.text);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                    ColorUtils.dynamicSecondaryForegroundColor,
+                    ColorUtils.primaryFontColor,
+                    AppLocalizations.of(context)!.settings_custom_folder,
+                    Globals.gamefoldercontroller,
+                    (value) async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      await prefs.setString("gameFolderPath", Globals.gamefoldercontroller.text);
+                    },
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -2485,7 +2664,7 @@ class WidgetUtils {
             color: Colors.orange,
           ),
           onPressed: () async {
-            final Uri _url = Uri.parse('file:///${LauncherUtils.getApplicationFolder("minecraft")}');
+            final Uri _url = Uri.parse('file://${Globals.gamefoldercontroller.text}');
             if (!await launchUrl(_url)) {
               throw Exception('Could not launch $_url');
             }
@@ -3064,5 +3243,81 @@ class ThreeDimensionalViewer {
     }));
 
     return completer.future;
+  }
+}
+
+class CirclePainter extends CustomPainter {
+  final Color color;
+  final double radius;
+  final Color outlineColor;
+  final double outlineWidth;
+  final double distance;
+
+  CirclePainter({
+    required this.color,
+    required this.radius,
+    this.outlineColor = Colors.transparent,
+    this.outlineWidth = 0,
+    this.distance = 0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    size = Size(radius, radius);
+
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    // Disegna il cerchio interno
+    canvas.drawCircle(Offset(size.width / 2, size.height / 2), size.width / 2, paint);
+
+    if (outlineWidth > 0) {
+      final outlinePaint = Paint()
+        ..color = outlineColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = outlineWidth;
+
+      // Calcola il raggio del cerchio esterno tenendo conto della distanza
+      double outerRadius = size.width / 2 + distance + outlineWidth / 2;
+
+      // Disegna il cerchio esterno
+      canvas.drawCircle(Offset(size.width / 2, size.height / 2), outerRadius, outlinePaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class ColoredCircle extends StatelessWidget {
+  final double size;
+  final Color color;
+  final Color outlineColor;
+  final double outlineWidth;
+  final double distance;
+
+  ColoredCircle({
+    required this.size,
+    required this.color,
+    this.outlineColor = Colors.transparent,
+    this.outlineWidth = 0,
+    this.distance = 0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(size + 2 * (distance + outlineWidth), size + 2 * (distance + outlineWidth)),
+      painter: CirclePainter(
+        color: color,
+        radius: size,
+        outlineColor: outlineColor,
+        outlineWidth: outlineWidth,
+        distance: distance,
+      ),
+    );
   }
 }

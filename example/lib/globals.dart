@@ -15,18 +15,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
 
 class Globals {
-  static final buildVersion = "Ver 1.1.5";
+  static final buildVersion = "Ver 1.1.7";
   static final windowTitle = "Morpheus Launcher";
   static final borderRadius = 14.0;
 
   // Impostazioni del launcher: anche se sono settate su false il loro valore viene sempre sovrascritto dalla config
   static var showOnlyReleases = false;
   static var darkModeTheme = false;
-  static var sysColorTheme = false;
   static var showConsole = false;
   static var showClients = false;
   static var javaAdvSet = false;
+  static var customFolderSet = false;
   static var selectedWindowTheme = '';
+  static var accentColor = 0;
 
   //////////////////////////////
   ///// Sezione Variabili //////
@@ -51,6 +52,7 @@ class Globals {
   static final javaramcontroller = TextEditingController();
   static final javavmcontroller = TextEditingController();
   static final javalaunchercontroller = TextEditingController();
+  static final gamefoldercontroller = TextEditingController();
   static final usernamecontroller = TextEditingController();
   static final consolecontroller = TextEditingController();
   static final hwidcontroller = TextEditingController();
@@ -100,7 +102,22 @@ class ColorUtils {
   static var isMaterial = false;
 
   /** Base accent color */
-  static Color get dynamicAccentColor => Globals.sysColorTheme ? SystemTheme.accentColor.light.withAlpha(200) : Colors.deepPurpleAccent.withAlpha(160);
+  static late Color dynamicAccentColor = getColorFromAccent(Globals.accentColor);
+
+  static Color getColorFromAccent(int accent) {
+    List<Color> accentColors = [
+      SystemTheme.accentColor.light.withAlpha(200), // System default color
+      Colors.red.withAlpha(160),
+      Colors.orange.withAlpha(160),
+      Colors.yellow.withAlpha(160),
+      Colors.green.withAlpha(160),
+      Colors.teal.withAlpha(160),
+      Colors.blue.withAlpha(160),
+      Colors.deepPurpleAccent.withAlpha(160),
+    ];
+
+    return accent < accentColors.length ? accentColors[accent] : SystemTheme.accentColor.light.withAlpha(200);
+  }
 
   /** Sfumature */
   static Color get defaultShadowColor => Colors.black.withAlpha(30);
@@ -233,7 +250,7 @@ class LauncherUtils {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var requiredJavaVersion;
 
-    File versionJsonFile = File('${LauncherUtils.getApplicationFolder("minecraft")}/versions/$gameVersion/$gameVersion.json');
+    File versionJsonFile = File('${Globals.gamefoldercontroller.text}/versions/$gameVersion/$gameVersion.json');
     if (versionJsonFile.existsSync()) {
       requiredJavaVersion = json.decode(versionJsonFile.readAsStringSync())["javaVersion"]["majorVersion"];
     } else {
@@ -355,7 +372,7 @@ class LauncherUtils {
 
 class VersionUtils {
   static Future<List<String>> getPinnedVersions() async {
-    String filePath = '${LauncherUtils.getApplicationFolder("minecraft")}/launcher_profiles.json';
+    String filePath = '${Globals.gamefoldercontroller.text}/launcher_profiles.json';
     File file = File(filePath);
 
     if (!await file.exists()) {
@@ -382,7 +399,7 @@ class VersionUtils {
   }
 
   static Future<void> updateLauncherProfiles(List<String> versionIds, String gameVersion) async {
-    String filePath = '${LauncherUtils.getApplicationFolder("minecraft")}/launcher_profiles.json';
+    String filePath = '${Globals.gamefoldercontroller.text}/launcher_profiles.json';
     File file = File(filePath);
 
     if (!await file.exists()) {
@@ -547,7 +564,7 @@ class VersionUtils {
   }
 
   static List<Map<String, dynamic>> getMinecraftOfflineVersions(var onlyModded) {
-    String versionsFolder = '${LauncherUtils.getApplicationFolder("minecraft")}/versions';
+    String versionsFolder = '${Globals.gamefoldercontroller.text}/versions';
 
     Directory directory = Directory(versionsFolder);
     if (!directory.existsSync()) {

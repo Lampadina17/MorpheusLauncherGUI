@@ -26,7 +26,7 @@
 
   "settings_only_release_switch": "Pokaż tylko wydania",
   "settings_dark_mode_switch": "Włącz ciemny motyw",
-  "settings_follow_system_color": "Śledź kolor akcentu systemowego",
+  "settings_follow_system_color": "Kolor szczegółów",
   "settings_check_java_title": "Czy Java działa?",
   "settings_check_java_yes": "Tak, twoja Java działa",
   "settings_check_java_no": "Nie, proszę wybrać poprawny plik wykonywalny Java dla twojego systemu operacyjnego",
@@ -38,8 +38,10 @@
   "settings_misc_label": "Różne",
   "settings_console_switch": "Pokaż konsolę przy uruchamianiu gry",
   "settings_show_clients": "Pokaż produkty Morpheus",
+  "settings_custom_folder_title": "Niestandardowy folder gry",
+  "settings_custom_folder": "Katalog gry",
   "settings_credits_title": "Podziękowania",
-  "settings_credits_content": "To oprogramowanie zostało opracowane przy użyciu różnych bibliotek open source: \n\nmaterial_color_utilities, flutter_secure_storage, flutter_localization, cached_network_image, simple_3d_renderer, shared_preferences, flutter_markdown, dropdown_button2, bitsdojo_window, flutter_switch, url_launcher, system_theme, flutter_html, text_divider, file_picker, process_run, discord_rpc, http_parser, provider, archive, encrypt, crypto, image, http, intl, blur, cupertino_icons. \n\nSzczerze dziękujemy wszystkim, którzy przyczynili się do rozwoju tych bibliotek, umożliwiając stworzenie tego oprogramowania.",
+  "settings_credits_content": "To oprogramowanie zostało opracowane przy użyciu różnych bibliotek open source: \n\nmaterial_color_utilities, flutter_secure_storage, flutter_localization, cached_network_image, simple_3d_renderer, shared_preferences, flutter_markdown, dropdown_button2, bitsdojo_window, flutter_switch, url_launcher, system_theme, flutter_html, text_divider, file_picker, process_run, file_selector, http_parser, provider, archive, encrypt, crypto, image, http, intl, blur, cupertino_icons. \n\nSzczerze dziękujemy wszystkim, którzy przyczynili się do rozwoju tych bibliotek, umożliwiając stworzenie tego oprogramowania.",
 
   "account_skin_buy_game": "kup Minecraft",
   "account_skin_error_msg": "Zmiana skórki możliwa tylko dla kont premium. Rozważ zakup Minecraft Java Edition na minecraft.net",
