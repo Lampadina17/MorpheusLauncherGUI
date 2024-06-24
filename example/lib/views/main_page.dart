@@ -2664,7 +2664,12 @@ class WidgetUtils {
             color: Colors.orange,
           ),
           onPressed: () async {
-            final Uri _url = Uri.parse('file://${Globals.gamefoldercontroller.text}');
+            final Uri _url;
+            if (Platform.isWindows) {
+              _url = Uri.parse('file:///${Globals.gamefoldercontroller.text}');
+            } else {
+              _url = Uri.parse('file://${Globals.gamefoldercontroller.text}');
+            }
             if (!await launchUrl(_url)) {
               throw Exception('Could not launch $_url');
             }
