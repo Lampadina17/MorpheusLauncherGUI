@@ -1,61 +1,61 @@
 {
   "images" : [
     {
-      "filename" : "morpheus (5).png",
+      "filename" : "morpheus_16.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
-      "filename" : "morpheus (4).png",
+      "filename" : "morpheus_32 1.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"
     },
     {
-      "filename" : "morpheus (4) 1.png",
+      "filename" : "morpheus_32.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "32x32"
     },
     {
-      "filename" : "morpheus (3).png",
+      "filename" : "morpheus_64.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "32x32"
     },
     {
-      "filename" : "morpheus (2).png",
+      "filename" : "morpheus_128.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "128x128"
     },
     {
-      "filename" : "morpheus (1).png",
+      "filename" : "morpheus_256.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "128x128"
     },
     {
-      "filename" : "morpheus (1) 1.png",
+      "filename" : "morpheus_256 1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
     },
     {
-      "filename" : "morpheus 1.png",
+      "filename" : "morpheus_512 1.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "256x256"
     },
     {
-      "filename" : "morpheus.png",
+      "filename" : "morpheus_512.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
     },
     {
-      "filename" : "app_icon_1024.png",
+      "filename" : "morpheus_mac.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "512x512"
