@@ -814,6 +814,7 @@ class _MainPageState extends State<MainPage> {
                           ]);
                         }
                         // Workaround sovra-ingegnerizzato per colpa di apple
+                        var startOnFirstThread = false;
                         if (Platform.isMacOS) {
                           var verList = VersionUtils.getMinecraftVersions(false);
                           // A partire da questa versione è necessario su mac usare XstartOnFirstThread
@@ -822,6 +823,7 @@ class _MainPageState extends State<MainPage> {
 
                           if (currentVersionIndex <= startingVersionIndex) {
                             args.addAll(["-XstartOnFirstThread"]);
+                            startOnFirstThread = true;
                           }
                         }
 
@@ -845,6 +847,10 @@ class _MainPageState extends State<MainPage> {
                           "-minecraftUUID",
                           "${AccountUtils.getAccount()?.uuid}",
                         ]);
+
+                        if (startOnFirstThread) {
+                          args.addAll(["-startOnFirstThread"]);
+                        }
 
                         if (Globals.customFolderSet) {
                           args.addAll([

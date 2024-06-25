@@ -15,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
 
 class Globals {
-  static final buildVersion = "Ver 1.1.7";
+  static final buildVersion = "Ver 1.1.8";
   static final windowTitle = "Morpheus Launcher";
   static final borderRadius = 14.0;
 
