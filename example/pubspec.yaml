@@ -21,6 +21,9 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
+  flutter_secure_storage_windows: ^3.1.2
+  flutter_secure_storage_macos: ^3.1.2
+  flutter_secure_storage_linux: ^1.2.1
   material_color_utilities: any
   flutter_secure_storage: any
   bitsdojo_window_macos: 0.1.3

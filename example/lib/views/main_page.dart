@@ -711,7 +711,7 @@ class _MainPageState extends State<MainPage> {
             children: [
               /** Info delle Versione */
               Padding(
-                padding: EdgeInsets.fromLTRB(12, releaseDate != "" ? 6 : 14, 10, 0),
+                padding: EdgeInsets.fromLTRB(12, releaseDate != "" ? 5 : 14, 10, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -2641,7 +2641,7 @@ class WidgetUtils {
                 controller: Globals.consolecontroller,
                 readOnly: true,
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 10,
                   fontWeight: FontWeight.w400,
                   fontFamily: "JetbrainsMono",
                   color: Colors.black,
