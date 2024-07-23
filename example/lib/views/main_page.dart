@@ -711,7 +711,7 @@ class _MainPageState extends State<MainPage> {
             children: [
               /** Info delle Versione */
               Padding(
-                padding: EdgeInsets.fromLTRB(12, releaseDate != "" ? 10 : 18, 10, 0),
+                padding: EdgeInsets.fromLTRB(12, releaseDate != "" ? 6 : 14, 10, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -719,7 +719,6 @@ class _MainPageState extends State<MainPage> {
                       "${gameType.substring(0, 1).toUpperCase() + gameType.substring(1)} ${gameVersion}",
                       style: WidgetUtils.customTextStyle(releaseDate.isNotEmpty ? 18 : 20, FontWeight.w500, ColorUtils.primaryFontColor),
                     ),
-                    SizedBox(height: 4),
                     if (releaseDate.isNotEmpty)
                       Text(
                         "${DateTime.parse(releaseDate).toLocal().day}/${DateTime.parse(releaseDate).toLocal().month}/${DateTime.parse(releaseDate).toLocal().year}",
@@ -987,7 +986,7 @@ class _MainPageState extends State<MainPage> {
               Column(
                 children: [
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.6 - 70,
+                    height: MediaQuery.of(context).size.height * 0.6 - 74,
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -1008,7 +1007,6 @@ class _MainPageState extends State<MainPage> {
                                   "${productName} ${productVersion}",
                                   style: WidgetUtils.customTextStyle(18, FontWeight.w500, Colors.white),
                                 ),
-                                SizedBox(height: 3),
                                 Text(
                                   "minecraft ${gameVersion}",
                                   style: WidgetUtils.customTextStyle(14, FontWeight.w500, Colors.white.withAlpha(200)),
@@ -1018,228 +1016,231 @@ class _MainPageState extends State<MainPage> {
                           ),
 
                           /** Sezione Pulsanti */
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              /** Icone informative */
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 2),
-                                child: Icon(
-                                  MorpheusIcons.windows,
-                                  color: Colors.white.withAlpha(100),
-                                  size: 22,
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 2, 2, 2),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                /** Icone informative */
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 2),
+                                  child: Icon(
+                                    MorpheusIcons.windows,
+                                    color: Colors.white.withAlpha(100),
+                                    size: 22,
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 2),
-                                child: Icon(
-                                  MorpheusIcons.apple,
-                                  color: Colors.white.withAlpha(100),
-                                  size: 22,
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 2),
+                                  child: Icon(
+                                    MorpheusIcons.apple,
+                                    color: Colors.white.withAlpha(100),
+                                    size: 22,
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(2, 0, 10, 0),
-                                child: Icon(
-                                  MorpheusIcons.linux,
-                                  color: Colors.white.withAlpha(100),
-                                  size: 22,
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(2, 0, 10, 0),
+                                  child: Icon(
+                                    MorpheusIcons.linux,
+                                    color: Colors.white.withAlpha(100),
+                                    size: 22,
+                                  ),
                                 ),
-                              ),
 
-                              /** Pulsanti di login/play */
-                              if (Globals.isLoggedIn) ...[
-                                /** Pulsante Play */
-                                WidgetUtils.buildButton(
-                                  Icons.rocket_launch,
-                                  ColorUtils.dynamicAccentColor,
-                                  Colors.white,
-                                  () async {
-                                    if (AccountUtils.getAccount() != null) {
-                                      Globals.consolecontroller.clear();
-                                      if (!Globals.javaAdvSet) WidgetUtils.showLoadingCircle(context);
-                                      AccountUtils.refreshPremium(context); // Refresha il token minecraft
+                                /** Pulsanti di login/play */
+                                if (Globals.isLoggedIn) ...[
+                                  /** Pulsante Play */
+                                  WidgetUtils.buildButton(
+                                    Icons.rocket_launch,
+                                    ColorUtils.dynamicAccentColor,
+                                    Colors.white,
+                                    () async {
+                                      if (AccountUtils.getAccount() != null) {
+                                        Globals.consolecontroller.clear();
+                                        if (!Globals.javaAdvSet) WidgetUtils.showLoadingCircle(context);
+                                        AccountUtils.refreshPremium(context); // Refresha il token minecraft
 
-                                      if (!Globals.javaAdvSet) {
-                                        // Installa java automaticamente
+                                        if (!Globals.javaAdvSet) {
+                                          // Installa java automaticamente
+                                          try {
+                                            await LauncherUtils.JavaAutoInstall(gameVersion);
+                                            Navigator.pop(context); // Chiudi il cerchiolino
+                                          } catch (e) {
+                                            Navigator.pop(context);
+                                            WidgetUtils.showMessageDialog(
+                                              context,
+                                              AppLocalizations.of(context)!.generic_error_msg,
+                                              "$e",
+                                              () => Navigator.pop(context),
+                                            );
+                                          }
+                                        }
+
                                         try {
-                                          await LauncherUtils.JavaAutoInstall(gameVersion);
-                                          Navigator.pop(context); // Chiudi il cerchiolino
+                                          // Scarica il guard e il suo injector, estrailo e cancella lo zip scaricato
+                                          var fileName;
+                                          if (Platform.isWindows) {
+                                            fileName = "morpheus_guard_win.zip";
+                                          } else if (Platform.isMacOS) {
+                                            fileName = "morpheus_guard_osx.zip";
+                                          } else if (Platform.isLinux) {
+                                            fileName = "morpheus_guard_tux.zip";
+                                          }
+                                          final guardResponse = await http.get(Uri.parse("${Urls.morpheusBaseURL}/downloads/${fileName}"));
+                                          if (guardResponse.statusCode == 200) {
+                                            final zipPath = "${LauncherUtils.getApplicationFolder("morpheus")}/morpheus_guard.zip";
+                                            File(zipPath).writeAsBytesSync(guardResponse.bodyBytes);
+                                            final archive = ZipDecoder().decodeBytes(guardResponse.bodyBytes);
+                                            for (final file in archive) {
+                                              final filePath = "${LauncherUtils.getApplicationFolder("morpheus")}/${file.name}";
+                                              if (file.isFile) {
+                                                File(filePath)
+                                                  ..createSync(recursive: true)
+                                                  ..writeAsBytesSync(file.content);
+                                              } else {
+                                                Directory(filePath).createSync(recursive: true);
+                                              }
+                                            }
+                                            File(zipPath).deleteSync();
+                                          }
                                         } catch (e) {
-                                          Navigator.pop(context);
                                           WidgetUtils.showMessageDialog(
                                             context,
                                             AppLocalizations.of(context)!.generic_error_msg,
-                                            "$e",
-                                            () => Navigator.pop(context),
+                                            "${e}",
+                                            () {
+                                              Navigator.pop(context);
+                                            },
                                           );
                                         }
-                                      }
 
-                                      try {
-                                        // Scarica il guard e il suo injector, estrailo e cancella lo zip scaricato
-                                        var fileName;
-                                        if (Platform.isWindows) {
-                                          fileName = "morpheus_guard_win.zip";
-                                        } else if (Platform.isMacOS) {
-                                          fileName = "morpheus_guard_osx.zip";
-                                        } else if (Platform.isLinux) {
-                                          fileName = "morpheus_guard_tux.zip";
-                                        }
-                                        final guardResponse = await http.get(Uri.parse("${Urls.morpheusBaseURL}/downloads/${fileName}"));
-                                        if (guardResponse.statusCode == 200) {
-                                          final zipPath = "${LauncherUtils.getApplicationFolder("morpheus")}/morpheus_guard.zip";
-                                          File(zipPath).writeAsBytesSync(guardResponse.bodyBytes);
-                                          final archive = ZipDecoder().decodeBytes(guardResponse.bodyBytes);
-                                          for (final file in archive) {
-                                            final filePath = "${LauncherUtils.getApplicationFolder("morpheus")}/${file.name}";
-                                            if (file.isFile) {
-                                              File(filePath)
-                                                ..createSync(recursive: true)
-                                                ..writeAsBytesSync(file.content);
-                                            } else {
-                                              Directory(filePath).createSync(recursive: true);
-                                            }
-                                          }
-                                          File(zipPath).deleteSync();
-                                        }
-                                      } catch (e) {
-                                        WidgetUtils.showMessageDialog(
-                                          context,
-                                          AppLocalizations.of(context)!.generic_error_msg,
-                                          "${e}",
-                                          () {
-                                            Navigator.pop(context);
-                                          },
-                                        );
-                                      }
-
-                                      try {
-                                        await getHwid(); // prova a prendere l'hwid usando il launcher (jar)
-                                        if (Globals.hwid != null) {
-                                          // se ci riesce fa la procedura automatica, altrimenti se fallisce ti fa fare quella semi-automatica
-                                          Globals.consolecontroller.text += "[LAUNCHER]: ${await LoginUtils.resetHwid(context, Globals.hwid)}\n";
-                                          runMorpheusClients(gameVersion, productId);
-                                        } else {
-                                          // apre il launcher con popup
-                                          await Process.start(
-                                            Globals.javapathcontroller.text,
-                                            [
-                                              '-jar',
-                                              '${LauncherUtils.getApplicationFolder("morpheus")}/Launcher.jar',
-                                              '-h',
-                                              'true',
-                                            ],
-                                          );
-                                          // apre un popup che ti chiede di incollare l'hwid
-                                          WidgetUtils.showPopup(
-                                            context,
-                                            AppLocalizations.of(context)!.cheats_hwid_reset_title,
-                                            <Widget>[
-                                              Material(
-                                                elevation: 15,
-                                                color: Colors.transparent,
-                                                shadowColor: ColorUtils.defaultShadowColor,
-                                                borderRadius: BorderRadius.circular(8),
-                                                child: WidgetUtils.buildSettingTextItem(
-                                                  null,
-                                                  Colors.white /* Sfondo della textbox */,
-                                                  Colors.black /* Colore del font della textbox */,
-                                                  AppLocalizations.of(context)!.cheats_hwid_reset_hint,
-                                                  Globals.hwidcontroller,
-                                                  (value) => null,
-                                                ),
-                                              ),
-                                            ],
-                                            <Widget>[
-                                              TextButton(
-                                                child: const Text(
-                                                  "OK",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontFamily: 'Comfortaa',
-                                                    fontWeight: FontWeight.w700,
+                                        try {
+                                          await getHwid(); // prova a prendere l'hwid usando il launcher (jar)
+                                          if (Globals.hwid != null) {
+                                            // se ci riesce fa la procedura automatica, altrimenti se fallisce ti fa fare quella semi-automatica
+                                            Globals.consolecontroller.text += "[LAUNCHER]: ${await LoginUtils.resetHwid(context, Globals.hwid)}\n";
+                                            runMorpheusClients(gameVersion, productId);
+                                          } else {
+                                            // apre il launcher con popup
+                                            await Process.start(
+                                              Globals.javapathcontroller.text,
+                                              [
+                                                '-jar',
+                                                '${LauncherUtils.getApplicationFolder("morpheus")}/Launcher.jar',
+                                                '-h',
+                                                'true',
+                                              ],
+                                            );
+                                            // apre un popup che ti chiede di incollare l'hwid
+                                            WidgetUtils.showPopup(
+                                              context,
+                                              AppLocalizations.of(context)!.cheats_hwid_reset_title,
+                                              <Widget>[
+                                                Material(
+                                                  elevation: 15,
+                                                  color: Colors.transparent,
+                                                  shadowColor: ColorUtils.defaultShadowColor,
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  child: WidgetUtils.buildSettingTextItem(
+                                                    null,
+                                                    Colors.white /* Sfondo della textbox */,
+                                                    Colors.black /* Colore del font della textbox */,
+                                                    AppLocalizations.of(context)!.cheats_hwid_reset_hint,
+                                                    Globals.hwidcontroller,
+                                                    (value) => null,
                                                   ),
                                                 ),
-                                                onPressed: () async {
-                                                  Navigator.pop(context);
-                                                  Globals.consolecontroller.text += "[LAUNCHER]: ${await LoginUtils.resetHwid(context, Globals.hwidcontroller.text)}\n";
-                                                  runMorpheusClients(gameVersion, productId);
-                                                },
-                                              ),
-                                            ],
+                                              ],
+                                              <Widget>[
+                                                TextButton(
+                                                  child: const Text(
+                                                    "OK",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontFamily: 'Comfortaa',
+                                                      fontWeight: FontWeight.w700,
+                                                    ),
+                                                  ),
+                                                  onPressed: () async {
+                                                    Navigator.pop(context);
+                                                    Globals.consolecontroller.text += "[LAUNCHER]: ${await LoginUtils.resetHwid(context, Globals.hwidcontroller.text)}\n";
+                                                    runMorpheusClients(gameVersion, productId);
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          }
+                                        } catch (e) {
+                                          WidgetUtils.showMessageDialog(
+                                            context,
+                                            AppLocalizations.of(context)!.generic_error_msg,
+                                            "${e}",
+                                            () {
+                                              Navigator.pop(context);
+                                            },
                                           );
                                         }
-                                      } catch (e) {
+                                      } else {
                                         WidgetUtils.showMessageDialog(
                                           context,
-                                          AppLocalizations.of(context)!.generic_error_msg,
-                                          "${e}",
+                                          AppLocalizations.of(context)!.account_required_title,
+                                          AppLocalizations.of(context)!.account_required_msg,
                                           () {
                                             Navigator.pop(context);
+                                            setState(() => Globals.NavSelected = 5);
                                           },
                                         );
                                       }
-                                    } else {
-                                      WidgetUtils.showMessageDialog(
-                                        context,
-                                        AppLocalizations.of(context)!.account_required_title,
-                                        AppLocalizations.of(context)!.account_required_msg,
-                                        () {
-                                          Navigator.pop(context);
-                                          setState(() => Globals.NavSelected = 5);
-                                        },
-                                      );
-                                    }
-                                  },
-                                ),
-                              ] else ...[
-                                /** Pulsante login che compare se l'utente non è loggato */
-                                WidgetUtils.buildButton(
-                                  Icons.login,
-                                  ColorUtils.dynamicAccentColor,
-                                  Colors.white,
-                                  () async => {
-                                    if (await LoginUtils.loadSession() != null) ...{
-                                      /** TEST PASSED */
-                                      LoginUtils.login(
-                                        context,
-                                        () => setState(() {
-                                          Globals.isLoggedIn = Globals.isLoggedIn;
-                                        }),
-                                      ),
-                                    } else ...{
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => LoginPage(
-                                            handlelogin: () => {
-                                              LoginUtils.login(
-                                                context,
-                                                (() => setState(() => Navigator.pop(context))), /** TEST PASSED */
-                                              ),
-                                            },
-                                            handleregister: () => {
-                                              LoginUtils.register(
-                                                context,
-                                                (() => setState(() => Navigator.pop(context))), /** TEST PASSED */
-                                              ),
-                                            },
-                                            handlereset: () => {
-                                              LoginUtils.pwdreset(
-                                                context,
-                                                (() => setState(() => Navigator.pop(context))), /** TEST PASSED */
-                                              ),
-                                            },
+                                    },
+                                  ),
+                                ] else ...[
+                                  /** Pulsante login che compare se l'utente non è loggato */
+                                  WidgetUtils.buildButton(
+                                    Icons.login,
+                                    ColorUtils.dynamicAccentColor,
+                                    Colors.white,
+                                    () async => {
+                                      if (await LoginUtils.loadSession() != null) ...{
+                                        /** TEST PASSED */
+                                        LoginUtils.login(
+                                          context,
+                                          () => setState(() {
+                                            Globals.isLoggedIn = Globals.isLoggedIn;
+                                          }),
+                                        ),
+                                      } else ...{
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => LoginPage(
+                                              handlelogin: () => {
+                                                LoginUtils.login(
+                                                  context,
+                                                  (() => setState(() => Navigator.pop(context))), /** TEST PASSED */
+                                                ),
+                                              },
+                                              handleregister: () => {
+                                                LoginUtils.register(
+                                                  context,
+                                                  (() => setState(() => Navigator.pop(context))), /** TEST PASSED */
+                                                ),
+                                              },
+                                              handlereset: () => {
+                                                LoginUtils.pwdreset(
+                                                  context,
+                                                  (() => setState(() => Navigator.pop(context))), /** TEST PASSED */
+                                                ),
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                      },
                                     },
-                                  },
-                                ),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
                         ],
                       ),
@@ -1454,7 +1455,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                   /** Nome del setting */
                   Padding(
-                    padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                    padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -2078,7 +2079,7 @@ class _MainPageState extends State<MainPage> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
+                    padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -2086,7 +2087,6 @@ class _MainPageState extends State<MainPage> {
                           username,
                           style: WidgetUtils.customTextStyle(18, FontWeight.w500, ColorUtils.primaryFontColor),
                         ),
-                        SizedBox(height: 3),
                         Text(
                           premium ? "Premium" : "Offline",
                           style: WidgetUtils.customTextStyle(14, FontWeight.w300, ColorUtils.secondaryFontColor),
@@ -2399,7 +2399,7 @@ class WidgetUtils {
                   ),
                   /** Nome del setting */
                   Padding(
-                    padding: EdgeInsets.fromLTRB(0, 20, 10, 0),
+                    padding: EdgeInsets.fromLTRB(0, 18, 10, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -3143,24 +3143,24 @@ class ThreeDimensionalViewer {
 
   /** Texturizza la testa */
   static void texturizePlayerHead(dynamic originalSkin) async {
-    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin!, 8, 8, 8, 8)))); // Testa avanti (faccia)
-    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 24, 8, 8, 8)))); // Testa dietro (nuca)
-    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 8, 0, 8, 8)))); // Testa sopra
-    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 0, 8, 8, 8)))); // Testa sinistra
-    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 16, 0, 8, 8)))); // Testa sotto
-    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 16, 8, 8, 8)))); // Testa destra
+    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin!, x: 8, y: 8, width: 8, height: 8)))); // Testa avanti (faccia)
+    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 24, y: 8, width: 8, height: 8)))); // Testa dietro (nuca)
+    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 8, y: 0, width: 8, height: 8)))); // Testa sopra
+    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 0, y: 8, width: 8, height: 8)))); // Testa sinistra
+    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 16, y: 0, width: 8, height: 8)))); // Testa sotto
+    objs[0].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 16, y: 8, width: 8, height: 8)))); // Testa destra
 
     for (int i = 0; i < 6; i++) objs[0].materials[i + 1].imageIndex = i;
   }
 
   /** Texturizza il busto */
   static void texturizePlayerChest(dynamic originalSkin) async {
-    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 20, 20, 8, 12)))); // Busto avanti
-    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 32, 20, 8, 12)))); // Busto dietro
-    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 20, 16, 8, 4)))); // Busto sopra
-    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 16, 20, 4, 12)))); // Busto sinistra
-    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 28, 16, 8, 4)))); // Busto sotto
-    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 28, 20, 4, 12)))); // Busto destra
+    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 20, y: 20, width: 8, height: 12)))); // Busto avanti
+    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 32, y: 20, width: 8, height: 12)))); // Busto dietro
+    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 20, y: 16, width: 8, height: 4)))); // Busto sopra
+    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 16, y: 20, width: 4, height: 12)))); // Busto sinistra
+    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 28, y: 16, width: 8, height: 4)))); // Busto sotto
+    objs[1].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 28, y: 20, width: 4, height: 12)))); // Busto destra
 
     for (int i = 0; i < 6; i++) objs[1].materials[i + 1].imageIndex = i;
   }
@@ -3168,26 +3168,26 @@ class ThreeDimensionalViewer {
   /** Texturizza le gambe */
   static void texturizePlayerLegs(dynamic originalSkin) async {
     /** Prepara le texture per la gamba destra (flippato) */
-    img.Image RightLegAvanti = img.copyCrop(originalSkin, 4, 20, 4, 12);
+    img.Image RightLegAvanti = img.copyCrop(originalSkin, x: 4, y: 20, width: 4, height: 12);
     img.flipHorizontal(RightLegAvanti);
-    img.Image RightLegDietro = img.copyCrop(originalSkin, 12, 20, 4, 12);
+    img.Image RightLegDietro = img.copyCrop(originalSkin, x: 12, y: 20, width: 4, height: 12);
     img.flipHorizontal(RightLegDietro);
-    img.Image RightLegSopra = img.copyCrop(originalSkin, 4, 16, 4, 4);
+    img.Image RightLegSopra = img.copyCrop(originalSkin, x: 4, y: 16, width: 4, height: 4);
     img.flipHorizontal(RightLegSopra);
-    img.Image RightLegSinistra = img.copyCrop(originalSkin, 8, 20, 4, 12);
+    img.Image RightLegSinistra = img.copyCrop(originalSkin, x: 8, y: 20, width: 4, height: 12);
     img.flipHorizontal(RightLegSinistra);
-    img.Image RightLegSotto = img.copyCrop(originalSkin, 8, 16, 4, 4);
+    img.Image RightLegSotto = img.copyCrop(originalSkin, x: 8, y: 16, width: 4, height: 4);
     img.flipHorizontal(RightLegSotto);
-    img.Image RightLegDestra = img.copyCrop(originalSkin, 0, 20, 4, 12);
+    img.Image RightLegDestra = img.copyCrop(originalSkin, x: 0, y: 20, width: 4, height: 12);
     img.flipHorizontal(RightLegDestra);
 
     /** Texturizza la gamba sinistra (terza persona) */
-    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 4, 20, 4, 12)))); // LeftLeg avanti
-    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 12, 20, 4, 12)))); // LeftLeg dietro
-    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 4, 16, 4, 4)))); // LeftLeg sopra
-    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 0, 20, 4, 12)))); // LeftLeg sinistra
-    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 8, 16, 4, 4)))); // LeftLeg sotto
-    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 8, 20, 4, 12)))); // LeftLeg destra
+    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 4, y: 20, width: 4, height: 12)))); // LeftLeg avanti
+    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 12, y: 20, width: 4, height: 12)))); // LeftLeg dietro
+    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 4, y: 16, width: 4, height: 4)))); // LeftLeg sopra
+    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 0, y: 20, width: 4, height: 12)))); // LeftLeg sinistra
+    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 8, y: 16, width: 4, height: 4)))); // LeftLeg sotto
+    objs[2].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 8, y: 20, width: 4, height: 12)))); // LeftLeg destra
     /** Texturizza la gamba destra (terza persona) */
     objs[3].images.add(Uint8List.fromList(img.encodePng(RightLegAvanti))); // RightLeg avanti
     objs[3].images.add(Uint8List.fromList(img.encodePng(RightLegDietro))); // RightLeg dietro
@@ -3203,26 +3203,26 @@ class ThreeDimensionalViewer {
   /** Texturizza le braccia */
   static void texturizePlayerArms(dynamic originalSkin, bool isSlimSkin) async {
     /** Prepara le texture per il braccio destro (flippato) */
-    img.Image RightArmAvanti = img.copyCrop(originalSkin, 44, 20, isSlimSkin ? 3 : 4, 12);
+    img.Image RightArmAvanti = img.copyCrop(originalSkin, x: 44, y: 20, width: isSlimSkin ? 3 : 4, height: 12);
     img.flipHorizontal(RightArmAvanti);
-    img.Image RightArmDietro = img.copyCrop(originalSkin, 52, 20, isSlimSkin ? 3 : 4, 12);
+    img.Image RightArmDietro = img.copyCrop(originalSkin, x: 52, y: 20, width: isSlimSkin ? 3 : 4, height: 12);
     img.flipHorizontal(RightArmDietro);
-    img.Image RightArmSopra = img.copyCrop(originalSkin, 44, 16, isSlimSkin ? 3 : 4, 4);
+    img.Image RightArmSopra = img.copyCrop(originalSkin, x: 44, y: 16, width: isSlimSkin ? 3 : 4, height: 4);
     img.flipHorizontal(RightArmSopra);
-    img.Image RightArmSinistra = img.copyCrop(originalSkin, 48, 20, 4, 12);
+    img.Image RightArmSinistra = img.copyCrop(originalSkin, x: 48, y: 20, width: 4, height: 12);
     img.flipHorizontal(RightArmSinistra);
-    img.Image RightArmSotto = img.copyCrop(originalSkin, 48, 16, isSlimSkin ? 3 : 4, 4);
+    img.Image RightArmSotto = img.copyCrop(originalSkin, x: 48, y: 16, width: isSlimSkin ? 3 : 4, height: 4);
     img.flipHorizontal(RightArmSotto);
-    img.Image RightArmDestra = img.copyCrop(originalSkin, 40, 20, 4, 12);
+    img.Image RightArmDestra = img.copyCrop(originalSkin, x: 40, y: 20, width: 4, height: 12);
     img.flipHorizontal(RightArmDestra);
 
     /** Texturizza il braccio sinistro (terza persona) */
-    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 44, 20, isSlimSkin ? 3 : 4, 12)))); // LeftArm avanti
-    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 52, 20, isSlimSkin ? 3 : 4, 12)))); // LeftArm dietro
-    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 44, 16, isSlimSkin ? 3 : 4, 4)))); // LeftArm sopra
-    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 40, 20, 4, 12)))); // LeftArm sinistra
-    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 48, 16, isSlimSkin ? 3 : 4, 4)))); // LeftArm sotto
-    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, 48, 20, 4, 12)))); // LeftArm destra
+    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 44, y: 20, width: isSlimSkin ? 3 : 4, height: 12)))); // LeftArm avanti
+    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 52, y: 20, width: isSlimSkin ? 3 : 4, height: 12)))); // LeftArm dietro
+    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 44, y: 16, width: isSlimSkin ? 3 : 4, height: 4)))); // LeftArm sopra
+    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 40, y: 20, width: 4, height: 12)))); // LeftArm sinistra
+    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 48, y: 16, width: isSlimSkin ? 3 : 4, height: 4)))); // LeftArm sotto
+    objs[4].images.add(Uint8List.fromList(img.encodePng(img.copyCrop(originalSkin, x: 48, y: 20, width: 4, height: 12)))); // LeftArm destra
     /** Texturizza il braccio destro (terza persona) */
     objs[5].images.add(Uint8List.fromList(img.encodePng(RightArmAvanti))); // RightArm avanti
     objs[5].images.add(Uint8List.fromList(img.encodePng(RightArmDietro))); // RightArm dietro
