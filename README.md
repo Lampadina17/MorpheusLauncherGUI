@@ -16,7 +16,7 @@ Flutter GUI for [Morpheus Launcher](https://github.com/Lampadina17/MorpheusLaunc
 This project requires:
 - intellij idea community or ultimate
 - windows 10/11, ubuntu 20.04+, macos 11.3+
-- Flutter 3.7.12
+- Flutter 3.22.3
 
 # 📣 Need more help?
 - Official launcher wiki: https://morpheus-launcher.gitbook.io/home/
