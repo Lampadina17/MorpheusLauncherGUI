@@ -192,7 +192,7 @@ class LoginWidgetUtils {
               hintText: hintText,
               hintStyle: WidgetUtils.customTextStyle(15, FontWeight.w700, ColorUtils.secondaryFontColor),
               contentPadding: EdgeInsets.symmetric(horizontal: 25),
-              filled: true,
+              filled: false,
               suffixIcon: Padding(
                 padding: const EdgeInsetsDirectional.only(end: 15.0),
                 child: Icon(

@@ -106,6 +106,7 @@ class MyAppBodyState extends State<MyAppBody> {
     Globals.selectedWindowTheme = prefs.getString('themeSet') ?? getDefaultTheme();
     Globals.showConsole = prefs.getBool('showConsole') ?? true;
     Globals.showClients = prefs.getBool('showClients') ?? false;
+    Globals.morpheusSession = prefs.getString('morpheusSession') ?? '';
 
     ColorUtils.isMaterial = (Globals.selectedWindowTheme.contains('Material'));
     ColorUtils.reloadColors();
@@ -124,6 +125,7 @@ class MyAppBodyState extends State<MyAppBody> {
     if (!prefs.containsKey('themeSet')) prefs.setString('themeSet', Globals.selectedWindowTheme);
     if (!prefs.containsKey('showConsole')) prefs.setBool('showConsole', Globals.showConsole);
     if (!prefs.containsKey('showClients')) prefs.setBool('showClients', Globals.showClients);
+    if (!prefs.containsKey('morpheusSession')) prefs.setString('morpheusSession', Globals.morpheusSession);
 
     Window.setEffect(
       effect: effect = getWindowEffect(),

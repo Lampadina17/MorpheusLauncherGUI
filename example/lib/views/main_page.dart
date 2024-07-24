@@ -1201,7 +1201,7 @@ class _MainPageState extends State<MainPage> {
                                     ColorUtils.dynamicAccentColor,
                                     Colors.white,
                                     () async => {
-                                      if (await LoginUtils.loadSession() != null) ...{
+                                      if (await LoginUtils.loadSession() != '') ...{
                                         /** TEST PASSED */
                                         LoginUtils.login(
                                           context,
@@ -2815,15 +2815,13 @@ class LoginUtils {
   /////////////////////////////////
 
   static loadSession() {
-    try {
-      return Globals.storage.read(key: 'refresh_token');
-    } catch (e) {
-      return null;
-    }
+    return Globals.morpheusSession;
   }
 
   static Future<void> saveSession() async {
-    await Globals.storage.write(key: 'refresh_token', value: Globals.morpheusAuthResponse["data"]["refreshToken"]);
+    Globals.morpheusSession = Globals.morpheusAuthResponse["data"]["refreshToken"];
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('morpheusSession', Globals.morpheusSession);
   }
 
   /** LOGIN */
@@ -2833,7 +2831,7 @@ class LoginUtils {
 
     // Autentica l'utente
     var response;
-    if (await loadSession() != null) {
+    if (await loadSession() != '') {
       response = await http.post(
         Uri.parse('${Urls.morpheusApiURL}/login/authtoken'),
         headers: <String, String>{
@@ -2876,7 +2874,9 @@ class LoginUtils {
             AppLocalizations.of(context)!.generic_error_msg,
             "${Globals.morpheusAuthResponse["message"]}",
             () async {
-              await Globals.storage.delete(key: 'refresh_token');
+              Globals.morpheusSession = '';
+              final prefs = await SharedPreferences.getInstance();
+              prefs.setString('morpheusSession', Globals.morpheusSession);
               Globals.isLoggedIn = false;
               Navigator.pop(context);
             },

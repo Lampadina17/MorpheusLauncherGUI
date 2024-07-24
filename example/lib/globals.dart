@@ -6,7 +6,6 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:material_color_utilities/material_color_utilities.dart';
 import 'package:morpheus_launcher_gui/account/account_utils.dart';
@@ -28,12 +27,11 @@ class Globals {
   static var customFolderSet = false;
   static var selectedWindowTheme = '';
   static var accentColor = 0;
+  static var morpheusSession = '';
 
   //////////////////////////////
   ///// Sezione Variabili //////
   //////////////////////////////
-
-  static final storage = new FlutterSecureStorage();
   static late List<Map<String, dynamic>> prodottoList = [];
   static late List<Account> accounts = readAccountListFromJson("${LauncherUtils.getApplicationFolder("morpheus")}/accounts.json");
   static late List<String> pinnedVersions = [];
