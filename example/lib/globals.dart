@@ -28,6 +28,7 @@ class Globals {
   static var selectedWindowTheme = '';
   static var accentColor = 0;
   static var morpheusSession = '';
+  static var fullTransparent = false;
 
   //////////////////////////////
   ///// Sezione Variabili //////
@@ -136,7 +137,7 @@ class ColorUtils {
   static Color get dynamicBackgroundColor => isMaterial ? dynamicMaterialColor : dynamicAcrylicColor;
 
   static Color get dynamicWindowBackgroundColor {
-    if (Platform.isMacOS) {
+    if (Platform.isMacOS || (Platform.isLinux && Globals.fullTransparent)) {
       return Colors.transparent;
     }
 
@@ -322,7 +323,7 @@ class LauncherUtils {
                   }
                 }
               }
-            } else {
+            } else if (Platform.isWindows) {
               final archive = ZipDecoder().decodeBytes(zipResponse.bodyBytes);
               for (final file in archive) {
                 final filePath = "$javaBasePath/${file.name}".replaceAll(fileName.replaceAll(".zip", "/"), "");
@@ -332,6 +333,26 @@ class LauncherUtils {
                     ..writeAsBytesSync(file.content);
                 } else {
                   Directory(filePath).create(recursive: true);
+                }
+              }
+            } else if (Platform.isLinux) {
+              // Unzippa da terminale, perchè in dart fa schifo
+              Process unzipProcess = await Process.start("unzip", [zipPath, "-d", "$javaBasePath/"]);
+
+              // Senza non funziona
+              unzipProcess.stdout.transform(systemEncoding.decoder).forEach((line) {});
+
+              // Quando finisce di estrarre tutto sposta i file nella directory precedente
+              if (await unzipProcess.exitCode == 0) {
+                Directory currentDir = Directory("$javaBasePath/${fileName.replaceAll(".zip", "/")}");
+                List<FileSystemEntity> files = currentDir.listSync();
+                for (FileSystemEntity file in files) {
+                  Process moveProcess = await Process.start("mv", [file.path, javaBasePath]);
+
+                  // Quando finisce di spostare un file alla volta cancella la cartella alla fine
+                  if (await moveProcess.exitCode == 0) {
+                    await Process.start("rmdir", [currentDir.path]);
+                  }
                 }
               }
             }

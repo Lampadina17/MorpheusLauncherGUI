@@ -1017,7 +1017,7 @@ class _MainPageState extends State<MainPage> {
 
                           /** Sezione Pulsanti */
                           Padding(
-                            padding: EdgeInsets.fromLTRB(0, 2, 2, 2),
+                            padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1510,7 +1510,7 @@ class _MainPageState extends State<MainPage> {
                                   distance: 3,
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.fromLTRB(2, 5, 0, 0),
+                                  padding: EdgeInsets.fromLTRB(2, 4, 0, 0),
                                   child: Text(
                                     "OS",
                                     style: WidgetUtils.customTextStyle(10, FontWeight.w100, Colors.white),
@@ -1683,6 +1683,21 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
 
+        /** Setting trasparenza per linux */
+        if (Platform.isLinux) ...[
+          WidgetUtils.buildSettingSwitchItem(
+            "Disable background tinting",
+            "fullTransparent",
+            Icons.format_paint,
+            ColorUtils.dynamicPrimaryForegroundColor,
+            ColorUtils.defaultShadowColor,
+            Globals.fullTransparent,
+            (value) {
+              setState(() => Globals.fullTransparent = value);
+            },
+          ),
+        ],
+
         /** Separatore */
         Padding(
           padding: EdgeInsets.symmetric(vertical: 5),
@@ -1752,48 +1767,51 @@ class _MainPageState extends State<MainPage> {
                     children: [
                       /** Java selection */
                       WidgetUtils.buildSettingTextItem(
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            WidgetUtils.buildButton(
-                              Icons.folder,
-                              ColorUtils.dynamicAccentColor,
-                              Colors.white,
-                              () async {
-                                FilePickerResult? result = await FilePicker.platform.pickFiles();
-                                if (result != null) {
-                                  File file = File(result.files.single.path!);
-                                  Globals.javapathcontroller.text = file.path.replaceAll("\\", "/");
-                                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                                  await prefs.setString("javaPath", Globals.javapathcontroller.text);
-                                }
-                              },
-                            ),
-                            WidgetUtils.buildButton(
-                              Icons.checklist,
-                              ColorUtils.dynamicAccentColor,
-                              Colors.white,
-                              () async {
-                                bool bol = await LauncherUtils.checkJava();
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              WidgetUtils.buildButton(
+                                Icons.folder,
+                                ColorUtils.dynamicAccentColor,
+                                Colors.white,
+                                () async {
+                                  FilePickerResult? result = await FilePicker.platform.pickFiles();
+                                  if (result != null) {
+                                    File file = File(result.files.single.path!);
+                                    Globals.javapathcontroller.text = file.path.replaceAll("\\", "/");
+                                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                                    await prefs.setString("javaPath", Globals.javapathcontroller.text);
+                                  }
+                                },
+                              ),
+                              WidgetUtils.buildButton(
+                                Icons.checklist,
+                                ColorUtils.dynamicAccentColor,
+                                Colors.white,
+                                () async {
+                                  bool bol = await LauncherUtils.checkJava();
 
-                                /** Esito del check della jvm */
-                                if (bol)
-                                  WidgetUtils.showMessageDialog(
-                                    context,
-                                    AppLocalizations.of(context)!.settings_check_java_title,
-                                    AppLocalizations.of(context)!.settings_check_java_yes,
-                                    () => Navigator.pop(context),
-                                  );
-                                else
-                                  WidgetUtils.showMessageDialog(
-                                    context,
-                                    AppLocalizations.of(context)!.settings_check_java_title,
-                                    AppLocalizations.of(context)!.settings_check_java_no,
-                                    () => Navigator.pop(context),
-                                  );
-                              },
-                            ),
-                          ],
+                                  /** Esito del check della jvm */
+                                  if (bol)
+                                    WidgetUtils.showMessageDialog(
+                                      context,
+                                      AppLocalizations.of(context)!.settings_check_java_title,
+                                      AppLocalizations.of(context)!.settings_check_java_yes,
+                                      () => Navigator.pop(context),
+                                    );
+                                  else
+                                    WidgetUtils.showMessageDialog(
+                                      context,
+                                      AppLocalizations.of(context)!.settings_check_java_title,
+                                      AppLocalizations.of(context)!.settings_check_java_no,
+                                      () => Navigator.pop(context),
+                                    );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                         ColorUtils.dynamicSecondaryForegroundColor,
                         ColorUtils.primaryFontColor,
@@ -1806,36 +1824,19 @@ class _MainPageState extends State<MainPage> {
                       ),
                       /** Java ram */
                       WidgetUtils.buildSettingTextItem(
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Material(
-                                elevation: 15,
-                                color: ColorUtils.dynamicAccentColor,
-                                shadowColor: ColorUtils.defaultShadowColor,
-                                borderRadius: BorderRadius.circular(Globals.borderRadius - 6),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 11,
-                                    horizontal: 7,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      "MB",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: 'Comfortaa',
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              WidgetUtils.buildButton(
+                                Icons.memory,
+                                ColorUtils.dynamicAccentColor,
+                                Colors.white,
+                                () => {},
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         ColorUtils.dynamicSecondaryForegroundColor,
                         ColorUtils.primaryFontColor,
@@ -1848,31 +1849,19 @@ class _MainPageState extends State<MainPage> {
                       ),
                       /** Java VM args */
                       WidgetUtils.buildSettingTextItem(
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Material(
-                                elevation: 15,
-                                color: ColorUtils.dynamicAccentColor,
-                                shadowColor: ColorUtils.defaultShadowColor,
-                                borderRadius: BorderRadius.circular(Globals.borderRadius - 6),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 8,
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      MorpheusIcons.java,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              WidgetUtils.buildButton(
+                                MorpheusIcons.java,
+                                ColorUtils.dynamicAccentColor,
+                                Colors.white,
+                                () => {},
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         ColorUtils.dynamicSecondaryForegroundColor,
                         ColorUtils.primaryFontColor,
@@ -1885,31 +1874,19 @@ class _MainPageState extends State<MainPage> {
                       ),
                       /** Launcher args */
                       WidgetUtils.buildSettingTextItem(
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Material(
-                                elevation: 15,
-                                color: ColorUtils.dynamicAccentColor,
-                                shadowColor: ColorUtils.defaultShadowColor,
-                                borderRadius: BorderRadius.circular(Globals.borderRadius - 6),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 8,
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.terminal_rounded,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              WidgetUtils.buildButton(
+                                Icons.terminal,
+                                ColorUtils.dynamicAccentColor,
+                                Colors.white,
+                                () => {},
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         ColorUtils.dynamicSecondaryForegroundColor,
                         ColorUtils.primaryFontColor,
@@ -1951,23 +1928,26 @@ class _MainPageState extends State<MainPage> {
                 Padding(
                   padding: EdgeInsets.fromLTRB(6, 0, 6, 4),
                   child: WidgetUtils.buildSettingTextItem(
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        WidgetUtils.buildButton(
-                          Icons.folder,
-                          ColorUtils.dynamicAccentColor,
-                          Colors.white,
-                          () async {
-                            final String? selectedDirectory = await getDirectoryPath();
-                            if (selectedDirectory != null) {
-                              Globals.gamefoldercontroller.text = selectedDirectory.replaceAll("\\", "/");
-                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                              await prefs.setString("gameFolderPath", Globals.gamefoldercontroller.text);
-                            }
-                          },
-                        ),
-                      ],
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          WidgetUtils.buildButton(
+                            Icons.folder,
+                            ColorUtils.dynamicAccentColor,
+                            Colors.white,
+                            () async {
+                              final String? selectedDirectory = await getDirectoryPath();
+                              if (selectedDirectory != null) {
+                                Globals.gamefoldercontroller.text = selectedDirectory.replaceAll("\\", "/");
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                await prefs.setString("gameFolderPath", Globals.gamefoldercontroller.text);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                     ColorUtils.dynamicSecondaryForegroundColor,
                     ColorUtils.primaryFontColor,
@@ -2525,7 +2505,7 @@ class WidgetUtils {
 
   static Widget buildButton(IconData icon, Color color, Color iconColor, VoidCallback onPressed) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
+      padding: const EdgeInsets.fromLTRB(0, 5, 6, 5),
       child: GestureDetector(
         onTap: onPressed,
         child: backShadow(

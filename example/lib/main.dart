@@ -107,6 +107,7 @@ class MyAppBodyState extends State<MyAppBody> {
     Globals.showConsole = prefs.getBool('showConsole') ?? true;
     Globals.showClients = prefs.getBool('showClients') ?? false;
     Globals.morpheusSession = prefs.getString('morpheusSession') ?? '';
+    Globals.fullTransparent = prefs.getBool('fullTransparent') ?? false;
 
     ColorUtils.isMaterial = (Globals.selectedWindowTheme.contains('Material'));
     ColorUtils.reloadColors();
@@ -126,6 +127,7 @@ class MyAppBodyState extends State<MyAppBody> {
     if (!prefs.containsKey('showConsole')) prefs.setBool('showConsole', Globals.showConsole);
     if (!prefs.containsKey('showClients')) prefs.setBool('showClients', Globals.showClients);
     if (!prefs.containsKey('morpheusSession')) prefs.setString('morpheusSession', Globals.morpheusSession);
+    if (!prefs.containsKey('fullTransparent')) prefs.setBool('fullTransparent', Globals.fullTransparent);
 
     Window.setEffect(
       effect: effect = getWindowEffect(),
