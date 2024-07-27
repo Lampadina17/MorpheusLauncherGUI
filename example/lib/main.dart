@@ -35,7 +35,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemTheme.fallbackColor = Colors.deepPurpleAccent.withAlpha(160);
   await SystemTheme.accentColor.load();
-  await Window.initialize();
+  if (!Platform.isLinux) await Window.initialize();
 
   if (Platform.isWindows) {
     await Window.hideWindowControls();

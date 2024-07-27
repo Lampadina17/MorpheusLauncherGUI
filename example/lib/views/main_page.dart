@@ -1628,6 +1628,8 @@ class _MainPageState extends State<MainPage> {
                             Globals.selectedWindowTheme = value!;
                             ColorUtils.isMaterial = (Globals.selectedWindowTheme.contains('Material'));
 
+                            if (ColorUtils.isMaterial) Globals.fullTransparent = false;
+
                             SharedPreferences prefs = await SharedPreferences.getInstance();
                             await prefs.setString("themeSet", Globals.selectedWindowTheme);
                             ColorUtils.reloadColors();
@@ -1684,7 +1686,7 @@ class _MainPageState extends State<MainPage> {
         ),
 
         /** Setting trasparenza per linux */
-        if (Platform.isLinux) ...[
+        if (Platform.isLinux && Globals.selectedWindowTheme == 'Clear') ...[
           WidgetUtils.buildSettingSwitchItem(
             "Disable background tinting",
             "fullTransparent",
