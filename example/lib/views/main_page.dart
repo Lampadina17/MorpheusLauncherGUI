@@ -747,7 +747,7 @@ class _MainPageState extends State<MainPage> {
                             Globals.pinnedVersions.remove(gameVersion);
                           }
                         });
-                        await VersionUtils.updateLauncherProfiles(Globals.pinnedVersions, gameVersion);
+                        await VersionUtils.updateLauncherProfiles(Globals.pinnedVersions);
                       },
                     ),
                   ],

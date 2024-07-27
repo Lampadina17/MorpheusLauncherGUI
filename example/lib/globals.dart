@@ -417,7 +417,7 @@ class VersionUtils {
     return versionIds;
   }
 
-  static Future<void> updateLauncherProfiles(List<String> versionIds, String gameVersion) async {
+  static Future<void> updateLauncherProfiles(List<String> versionIds) async {
     String filePath = '${Globals.gamefoldercontroller.text}/launcher_profiles.json';
     File file = File(filePath);
 
@@ -432,18 +432,20 @@ class VersionUtils {
     profiles ??= {};
     List<String> keysToRemove = [];
 
+    // Aggiungere o aggiornare le voci dei profili
     versionIds.forEach((versionId) {
       if (!profiles!.containsKey(versionId)) {
         profiles![versionId] = {
-          "name": gameVersion,
+          "name": versionId,
           "lastVersionId": versionId,
         };
       }
     });
 
+    // Rimuovere le chiavi non più presenti in versionIds
     profiles.forEach((key, value) {
       if (value is Map<String, dynamic>) {
-        if (versionIds.isEmpty) {
+        if (!versionIds.contains(key)) {
           keysToRemove.add(key);
         }
       }
