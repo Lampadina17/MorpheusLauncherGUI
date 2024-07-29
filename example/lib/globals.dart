@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:macos_haptic_feedback/macos_haptic_feedback.dart';
 import 'package:material_color_utilities/material_color_utilities.dart';
 import 'package:morpheus_launcher_gui/account/account_utils.dart';
 import 'package:morpheus_launcher_gui/account/encryption.dart';
@@ -14,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
 
 class Globals {
-  static final buildVersion = "Ver 2.0.0";
+  static final buildVersion = "Ver 2.0.1";
   static final windowTitle = "Morpheus Launcher";
   static final borderRadius = 14.0;
 
@@ -74,6 +75,9 @@ class Globals {
   /** Vanilla */
   static late var vanillaVersionsResponse = null;
   static late var vanillaNewsResponse = null;
+
+  /** Haptic feedback (macos) */
+  static final hapticFeedback = MacosHapticFeedback();
 }
 
 class Urls {
