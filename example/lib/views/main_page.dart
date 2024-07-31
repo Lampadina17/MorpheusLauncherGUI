@@ -450,19 +450,22 @@ class _MainPageState extends State<MainPage> {
           print(e);
         }
       },
-      child: Container(
-        height: 70,
-        width: 60,
-        child: Center(
-          child: Material(
-            elevation: 10,
-            color: Colors.transparent,
-            shadowColor: ColorUtils.defaultShadowColor,
-            borderRadius: BorderRadius.circular(10),
-            child: Icon(
-              icon,
-              color: Globals.NavSelected == index ? ColorUtils.primaryFontColor.withAlpha(255) : ColorUtils.primaryFontColor.withAlpha(128),
-              size: 30,
+      child: MouseRegion(
+        onEnter: (e) => Globals.hapticFeedback.generic(),
+        child: Container(
+          height: 70,
+          width: 60,
+          child: Center(
+            child: Material(
+              elevation: 10,
+              color: Colors.transparent,
+              shadowColor: ColorUtils.defaultShadowColor,
+              borderRadius: BorderRadius.circular(10),
+              child: Icon(
+                icon,
+                color: Globals.NavSelected == index ? ColorUtils.primaryFontColor.withAlpha(255) : ColorUtils.primaryFontColor.withAlpha(128),
+                size: 30,
+              ),
             ),
           ),
         ),
@@ -478,26 +481,29 @@ class _MainPageState extends State<MainPage> {
           Globals.NavSelected = index;
         });
       },
-      child: Container(
-        height: 80,
-        width: 35,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(
-            opacity: Globals.NavSelected == index ? 1 : 0.5,
-            image: AccountUtils._buildAvatarImageProvider(),
+      child: MouseRegion(
+        onEnter: (e) => Globals.hapticFeedback.generic(),
+        child: Container(
+          height: 80,
+          width: 35,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(
+              opacity: Globals.NavSelected == index ? 1 : 0.5,
+              image: AccountUtils._buildAvatarImageProvider(),
+            ),
           ),
-        ),
-        child: Center(
-          child: Material(
-            elevation: 10,
-            color: Colors.transparent,
-            shadowColor: ColorUtils.defaultShadowColor,
-            borderRadius: BorderRadius.circular(10),
-            child: ImageIcon(
-              AccountUtils._buildAvatarImageProvider(),
+          child: Center(
+            child: Material(
+              elevation: 10,
               color: Colors.transparent,
-              size: 35,
+              shadowColor: ColorUtils.defaultShadowColor,
+              borderRadius: BorderRadius.circular(10),
+              child: ImageIcon(
+                AccountUtils._buildAvatarImageProvider(),
+                color: Colors.transparent,
+                size: 35,
+              ),
             ),
           ),
         ),
@@ -1065,55 +1071,13 @@ class _MainPageState extends State<MainPage> {
                       borderRadius: BorderRadius.circular(10),
                       child: Row(
                         children: [
-                          GestureDetector(
-                            onTap: () async => {
-                              Globals.accentColor = 0,
-                              (await SharedPreferences.getInstance()).setInt('accentColor', Globals.accentColor),
-                              setState(() => {
-                                    ColorUtils.dynamicAccentColor = ColorUtils.getColorFromAccent(Globals.accentColor),
-                                  }),
-                              ColorUtils.reloadColors(),
-                              Window.setEffect(
-                                effect: getWindowEffect(),
-                                color: ColorUtils.dynamicBackgroundColor,
-                                dark: Globals.darkModeTheme,
-                              ),
-                              if (Platform.isMacOS) ...[
-                                Window.overrideMacOSBrightness(
-                                  dark: Globals.darkModeTheme,
-                                ),
-                              ],
-                            },
-                            child: Stack(
-                              children: [
-                                ColoredCircle(
-                                  size: 20,
-                                  color: SystemTheme.accentColor.light.withAlpha(200),
-                                  outlineColor: Globals.accentColor == 0 ? Colors.white : Colors.transparent,
-                                  outlineWidth: 2,
-                                  distance: 3,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(2, 4, 0, 0),
-                                  child: Text(
-                                    "OS",
-                                    style: WidgetUtils.customTextStyle(10, FontWeight.w100, Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          for (int i = 1; i <= 7; i++) ...[
-                            SizedBox(
-                              width: 2,
-                            ),
-                            GestureDetector(
+                          MouseRegion(
+                            onEnter: (e) => Globals.hapticFeedback.generic(),
+                            child: GestureDetector(
                               onTap: () async => {
-                                Globals.accentColor = i,
+                                Globals.accentColor = 0,
                                 (await SharedPreferences.getInstance()).setInt('accentColor', Globals.accentColor),
-                                setState(() => {
-                                      ColorUtils.dynamicAccentColor = ColorUtils.getColorFromAccent(Globals.accentColor),
-                                    }),
+                                setState(() => ColorUtils.dynamicAccentColor = ColorUtils.getColorFromAccent(Globals.accentColor)),
                                 ColorUtils.reloadColors(),
                                 Window.setEffect(
                                   effect: getWindowEffect(),
@@ -1126,12 +1090,56 @@ class _MainPageState extends State<MainPage> {
                                   ),
                                 ],
                               },
-                              child: ColoredCircle(
-                                size: 20,
-                                color: ColorUtils.getColorFromAccent(i),
-                                outlineColor: Globals.accentColor == i ? Colors.white : Colors.transparent,
-                                outlineWidth: 2,
-                                distance: 3,
+                              child: Stack(
+                                children: [
+                                  ColoredCircle(
+                                    size: 20,
+                                    color: SystemTheme.accentColor.light.withAlpha(200),
+                                    outlineColor: Globals.accentColor == 0 ? Colors.white : Colors.transparent,
+                                    outlineWidth: 2,
+                                    distance: 3,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(2, 4, 0, 0),
+                                    child: Text(
+                                      "OS",
+                                      style: WidgetUtils.customTextStyle(10, FontWeight.w100, Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          for (int i = 1; i <= 7; i++) ...[
+                            SizedBox(
+                              width: 2,
+                            ),
+                            MouseRegion(
+                              onEnter: (e) => Globals.hapticFeedback.generic(),
+                              child: GestureDetector(
+                                onTap: () async => {
+                                  Globals.accentColor = i,
+                                  (await SharedPreferences.getInstance()).setInt('accentColor', Globals.accentColor),
+                                  setState(() => ColorUtils.dynamicAccentColor = ColorUtils.getColorFromAccent(Globals.accentColor)),
+                                  ColorUtils.reloadColors(),
+                                  Window.setEffect(
+                                    effect: getWindowEffect(),
+                                    color: ColorUtils.dynamicBackgroundColor,
+                                    dark: Globals.darkModeTheme,
+                                  ),
+                                  if (Platform.isMacOS) ...[
+                                    Window.overrideMacOSBrightness(
+                                      dark: Globals.darkModeTheme,
+                                    ),
+                                  ],
+                                },
+                                child: ColoredCircle(
+                                  size: 20,
+                                  color: ColorUtils.getColorFromAccent(i),
+                                  outlineColor: Globals.accentColor == i ? Colors.white : Colors.transparent,
+                                  outlineWidth: 2,
+                                  distance: 3,
+                                ),
                               ),
                             ),
                           ],
@@ -1193,71 +1201,75 @@ class _MainPageState extends State<MainPage> {
                       color: Colors.transparent,
                       shadowColor: ColorUtils.defaultShadowColor,
                       borderRadius: BorderRadius.circular(Globals.borderRadius),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton2<String>(
-                          isExpanded: true,
-                          hint: Text(
-                            'Theme',
-                            style: WidgetUtils.customTextStyle(16, FontWeight.w500, ColorUtils.primaryFontColor),
-                          ),
-                          items: Globals.WindowThemes.map((String item) => DropdownMenuItem<String>(
-                                value: item,
-                                child: Text(
-                                  item,
-                                  style: WidgetUtils.customTextStyle(16, FontWeight.w500, ColorUtils.primaryFontColor),
-                                ),
-                              )).toList(),
-                          value: Globals.selectedWindowTheme,
-                          onChanged: (String? value) async {
-                            Globals.selectedWindowTheme = value!;
-                            ColorUtils.isMaterial = (Globals.selectedWindowTheme.contains('Material'));
+                      child: MouseRegion(
+                        onEnter: (e) => Globals.hapticFeedback.generic(),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton2<String>(
+                            isExpanded: true,
+                            hint: Text(
+                              'Theme',
+                              style: WidgetUtils.customTextStyle(16, FontWeight.w500, ColorUtils.primaryFontColor),
+                            ),
+                            items: Globals.WindowThemes.map((String item) => DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(
+                                    item,
+                                    style: WidgetUtils.customTextStyle(16, FontWeight.w500, ColorUtils.primaryFontColor),
+                                  ),
+                                )).toList(),
+                            value: Globals.selectedWindowTheme,
+                            onChanged: (String? value) async {
+                              Globals.selectedWindowTheme = value!;
+                              ColorUtils.isMaterial = (Globals.selectedWindowTheme.contains('Material'));
 
-                            if (ColorUtils.isMaterial) Globals.fullTransparent = false;
+                              if (ColorUtils.isMaterial) Globals.fullTransparent = false;
 
-                            SharedPreferences prefs = await SharedPreferences.getInstance();
-                            await prefs.setString("themeSet", Globals.selectedWindowTheme);
-                            ColorUtils.reloadColors();
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              await prefs.setString("themeSet", Globals.selectedWindowTheme);
+                              ColorUtils.reloadColors();
 
-                            dynamic effect = getWindowEffect();
-                            Window.setEffect(
-                              effect: effect,
-                              color: ColorUtils.dynamicBackgroundColor,
-                              dark: Globals.darkModeTheme,
-                            );
-                            if (Platform.isMacOS) {
-                              Window.overrideMacOSBrightness(
+                              dynamic effect = getWindowEffect();
+                              Window.setEffect(
+                                effect: effect,
+                                color: ColorUtils.dynamicBackgroundColor,
                                 dark: Globals.darkModeTheme,
                               );
-                            }
-                            setState(() => effect = effect);
-                          },
-                          buttonStyleData: ButtonStyleData(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            height: 40,
-                            width: 140,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(Globals.borderRadius - 4),
-                              color: ColorUtils.dynamicSecondaryForegroundColor,
+                              if (Platform.isMacOS) {
+                                Window.overrideMacOSBrightness(
+                                  dark: Globals.darkModeTheme,
+                                );
+                              }
+                              setState(() => effect = effect);
+                              Globals.hapticFeedback.generic();
+                            },
+                            buttonStyleData: ButtonStyleData(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              height: 40,
+                              width: 140,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(Globals.borderRadius - 4),
+                                color: ColorUtils.dynamicSecondaryForegroundColor,
+                              ),
                             ),
-                          ),
-                          menuItemStyleData: MenuItemStyleData(
-                            height: 40,
-                          ),
-                          dropdownStyleData: DropdownStyleData(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(Globals.borderRadius - 4),
-                              color: ColorUtils.dynamicPrimaryForegroundColor,
+                            menuItemStyleData: MenuItemStyleData(
+                              height: 40,
                             ),
-                            offset: Offset(0, -4),
-                            elevation: ColorUtils.isMaterial ? 9 : 0,
-                          ),
-                          iconStyleData: IconStyleData(
-                            icon: Icon(
-                              Icons.arrow_forward_ios,
+                            dropdownStyleData: DropdownStyleData(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(Globals.borderRadius - 4),
+                                color: ColorUtils.dynamicPrimaryForegroundColor,
+                              ),
+                              offset: Offset(0, -4),
+                              elevation: ColorUtils.isMaterial ? 9 : 0,
                             ),
-                            iconSize: 14,
-                            iconEnabledColor: ColorUtils.primaryFontColor,
-                            iconDisabledColor: Colors.white30,
+                            iconStyleData: IconStyleData(
+                              icon: Icon(
+                                Icons.arrow_forward_ios,
+                              ),
+                              iconSize: 14,
+                              iconEnabledColor: ColorUtils.primaryFontColor,
+                              iconDisabledColor: Colors.white30,
+                            ),
                           ),
                         ),
                       ),
@@ -1558,7 +1570,11 @@ class _MainPageState extends State<MainPage> {
             ),
             onTap: () {
               WidgetUtils.showMessageDialog(
-                  context, AppLocalizations.of(context)!.settings_credits_title, AppLocalizations.of(context)!.settings_credits_content, () => {Navigator.pop(context)});
+                context,
+                AppLocalizations.of(context)!.settings_credits_title,
+                AppLocalizations.of(context)!.settings_credits_content,
+                () => Navigator.pop(context),
+              );
             },
           ),
         ),
@@ -1978,20 +1994,25 @@ class WidgetUtils {
                       shadowColor: Colors.transparent,
                       // Globals.defaultShadowColor,
                       borderRadius: BorderRadius.circular(10),
-                      child: FlutterSwitch(
-                        width: 50,
-                        height: 25,
-                        toggleSize: 18.0,
-                        toggleColor: ColorUtils.isMaterial ? ColorUtils.dynamicPrimaryForegroundColor : Colors.white,
-                        activeColor: ColorUtils.dynamicAccentColor,
-                        inactiveColor: ColorUtils.dynamicSecondaryForegroundColor,
-                        value: set,
-                        onToggle: (value) async {
-                          callback(value);
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          await prefs.setBool(name2, value);
-                          set = value;
-                        },
+                      child: MouseRegion(
+                        onEnter: (e) => Globals.hapticFeedback.generic(),
+                        onExit: (e) => Globals.hapticFeedback.generic(),
+                        child: FlutterSwitch(
+                          width: 50,
+                          height: 25,
+                          toggleSize: 18.0,
+                          toggleColor: ColorUtils.isMaterial ? ColorUtils.dynamicPrimaryForegroundColor : Colors.white,
+                          activeColor: ColorUtils.dynamicAccentColor,
+                          inactiveColor: ColorUtils.dynamicSecondaryForegroundColor,
+                          value: set,
+                          onToggle: (value) async {
+                            callback(value);
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            await prefs.setBool(name2, value);
+                            set = value;
+                            Globals.hapticFeedback.generic();
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -2082,18 +2103,21 @@ class WidgetUtils {
       child: GestureDetector(
         onTap: onPressed,
         child: backShadow(
-          Material(
-            elevation: 15,
-            color: color,
-            shadowColor: Colors.transparent,
-            borderRadius: BorderRadius.circular(Globals.borderRadius - 4),
-            child: Container(
-              padding: EdgeInsets.all(10),
-              child: Center(
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: 20,
+          MouseRegion(
+            onEnter: (e) => Globals.hapticFeedback.generic(),
+            child: Material(
+              elevation: 15,
+              color: color,
+              shadowColor: Colors.transparent,
+              borderRadius: BorderRadius.circular(Globals.borderRadius - 4),
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    color: iconColor,
+                    size: 20,
+                  ),
                 ),
               ),
             ),
