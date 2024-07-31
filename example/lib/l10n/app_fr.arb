@@ -8,12 +8,6 @@
   "home_news_title": "Journal des modifications",
   "home_news_empty_msg": "Impossible de récupérer le journal des modifications de Minecraft depuis Mojang. Veuillez autoriser ce programme via votre pare-feu",
 
-  "cheats_empty_title": "Impossible de récupérer les produits Morpheus, veuillez autoriser ce programme via votre pare-feu",
-  "cheats_empty_products": "Cet compte n'a aucun produit ¯\\_(ツ)_/¯",
-  "cheats_hwid_button": "HWID : Cliquez ici pour réinitialiser",
-  "cheats_hwid_reset_title": "Réinitialisation manuelle du HWID",
-  "cheats_hwid_reset_hint": "Collez le HWID ici",
-
   "vanilla_empty_title": "Aucune version de Minecraft Vanilla trouvée",
   "vanilla_release_title": "Dernière version",
   "vanilla_snapshot_title": "Dernier snapshot",
@@ -37,7 +31,6 @@
   "settings_theme": "Thème du lanceur",
   "settings_misc_label": "Divers",
   "settings_console_switch": "Afficher la console au démarrage du jeu",
-  "settings_show_clients": "Afficher les produits Morpheus",
   "settings_custom_folder_title": "Dossier de jeu personnalisé",
   "settings_custom_folder": "Répertoire du jeu",
   "settings_credits_title": "Remerciements",
@@ -77,15 +70,5 @@
   "console_exit_msg1": "Êtes-vous sûr de vouloir fermer la console ?",
   "console_exit_msg2": "Si vous fermez la console, vous ne pourrez plus lire ce que le jeu fait",
   "console_exit_kill": "Arrêter le jeu et quitter",
-  "console_exit_only": "Quitter",
-
-  "username_label": "Nom d'utilisateur",
-  "password_label": "Mot de passe",
-  "new_password_label": "Nouveau mot de passe",
-  "otp_code_label": "Code de réinitialisation (OTP)",
-
-  "login_button": "Se connecter",
-  "register_button": "S'inscrire",
-  "forgot_password_question": "Mot de passe oublié?",
-  "reset_password_button": "Confirmer"
+  "console_exit_only": "Quitter"
 }

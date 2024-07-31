@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:archive/archive.dart';
 import 'package:blur/blur.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -14,16 +13,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:morpheus_launcher_gui/account/account_utils.dart';
 import 'package:morpheus_launcher_gui/account/microsoft_auth.dart';
 import 'package:morpheus_launcher_gui/globals.dart';
 import 'package:morpheus_launcher_gui/main.dart';
-import 'package:morpheus_launcher_gui/utils/glassmorphism.dart';
 import 'package:morpheus_launcher_gui/utils/morpheus_icons_icons.dart';
-import 'package:morpheus_launcher_gui/utils/morpheus_utils.dart';
-import 'package:morpheus_launcher_gui/views/login_page.dart';
 import 'package:morpheus_launcher_gui/views/widget_news.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_3d/simple_3d.dart';
@@ -88,18 +83,6 @@ class _MainPageState extends State<MainPage> {
                       ),
                     ]),
                   ] else if (Globals.NavSelected == 1) ...[
-                    /** Hacks */
-                    Row(children: [
-                      buildNavbar(),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: ScrollConfiguration(
-                          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                          child: buildHackList(),
-                        ),
-                      ),
-                    ]),
-                  ] else if (Globals.NavSelected == 2) ...[
                     /** Vanilla */
                     Row(children: [
                       buildNavbar(),
@@ -111,7 +94,7 @@ class _MainPageState extends State<MainPage> {
                         ),
                       ),
                     ]),
-                  ] else if (Globals.NavSelected == 3) ...[
+                  ] else if (Globals.NavSelected == 2) ...[
                     /** Versioni moddate */
                     Row(children: [
                       buildNavbar(),
@@ -123,7 +106,7 @@ class _MainPageState extends State<MainPage> {
                         ),
                       ),
                     ]),
-                  ] else if (Globals.NavSelected == 4) ...[
+                  ] else if (Globals.NavSelected == 3) ...[
                     /** Impostazioni */
                     Row(children: [
                       buildNavbar(),
@@ -135,7 +118,7 @@ class _MainPageState extends State<MainPage> {
                         ),
                       ),
                     ]),
-                  ] else if (Globals.NavSelected == 5) ...[
+                  ] else if (Globals.NavSelected == 4) ...[
                     /** Alt Manager */
                     Row(children: [
                       buildNavbar(),
@@ -445,11 +428,10 @@ class _MainPageState extends State<MainPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           buildNavItem(Icons.home, 0),
-          if (Globals.showClients) buildNavItem(MorpheusIcons.hacks, 1),
-          buildNavItem(MorpheusIcons.vanilla, 2),
-          buildNavItem(MorpheusIcons.modded, 3),
-          buildNavItem(Icons.settings, 4),
-          buildNavAccountItem(5),
+          buildNavItem(MorpheusIcons.vanilla, 1),
+          buildNavItem(MorpheusIcons.modded, 2),
+          buildNavItem(Icons.settings, 3),
+          buildNavAccountItem(4),
         ],
       ),
     );
@@ -900,404 +882,6 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  ///////////// HACK ///////////////
-
-  ListView buildHackList() {
-    return ListView(
-      children: [
-        /** Messaggio di benvenuto o quasi */
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: !LauncherUtils.isOnline() ? 20 : 5),
-          child: Text(
-            LauncherUtils.isOnline()
-                ? (Globals.isLoggedIn ? Globals.morpheusAuthResponse["message"] : "${Globals.morpheusProductsResponse["message"]}")
-                : AppLocalizations.of(context)!.cheats_empty_title,
-            textAlign: TextAlign.center,
-            style: WidgetUtils.customTextStyle(Globals.isLoggedIn ? 22 : 14, FontWeight.w300, ColorUtils.primaryFontColor),
-          ),
-        ),
-
-        /** Separatore */
-        if (LauncherUtils.isOnline())
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Divider(
-              color: ColorUtils.secondaryFontColor,
-            ),
-          ),
-
-        /** Lista completa dei cheats */
-        if (Globals.prodottoList.isNotEmpty)
-          for (var prodotto in Globals.prodottoList)
-            buildHackItem(
-              "${(prodotto["name"].toString().replaceAll(".jar", ""))}",
-              "${prodotto["version"]}",
-              "${prodotto["gameversion"]}",
-              "${prodotto["id"]}",
-              Globals.prodottoList.indexOf(prodotto),
-              "${prodotto["description"]}",
-              "${prodotto["image"]}",
-              "${prodotto["link"]}",
-            ),
-
-        /** Avviso che compare se l'utente non ha nessun cheat nell'account */
-        if (Globals.isLoggedIn && Globals.prodottoList.isEmpty)
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 2),
-            child: Text(
-              AppLocalizations.of(context)!.cheats_empty_products,
-              textAlign: TextAlign.center,
-              style: WidgetUtils.customTextStyle(14, FontWeight.w300, ColorUtils.primaryFontColor),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget buildHackItem(String productName, String productVersion, String gameVersion, String productId, int index, String description, String image, String link) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(0, 2, 0, 2),
-      child: Container(
-        child: Material(
-          elevation: 15,
-          color: ColorUtils.dynamicPrimaryForegroundColor,
-          shadowColor: ColorUtils.defaultShadowColor,
-          borderRadius: BorderRadius.circular(Globals.borderRadius),
-          child: Stack(
-            children: [
-              /** Immagine del client */
-              Container(
-                height: MediaQuery.of(context).size.height * 0.6,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 3, horizontal: 3),
-                  child: Image.network(
-                    "${image}",
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    fit: BoxFit.cover,
-                  ).blurred(
-                    blur: 0,
-                    blurColor: Colors.black,
-                    colorOpacity: 0.1,
-                    borderRadius: BorderRadius.circular(Globals.borderRadius - 2),
-                  ),
-                ),
-              ),
-              Column(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.6 - 74,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    child: GlassMorphism(
-                      blur: 8,
-                      opacity: 0.15,
-                      radius: Globals.borderRadius,
-                      child: Stack(
-                        children: [
-                          /** Info del client */
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(8, 5, 10, 5),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "${productName} ${productVersion}",
-                                  style: WidgetUtils.customTextStyle(18, FontWeight.w500, Colors.white),
-                                ),
-                                Text(
-                                  "minecraft ${gameVersion}",
-                                  style: WidgetUtils.customTextStyle(14, FontWeight.w500, Colors.white.withAlpha(200)),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          /** Sezione Pulsanti */
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                /** Icone informative */
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 2),
-                                  child: Icon(
-                                    MorpheusIcons.windows,
-                                    color: Colors.white.withAlpha(100),
-                                    size: 22,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 2),
-                                  child: Icon(
-                                    MorpheusIcons.apple,
-                                    color: Colors.white.withAlpha(100),
-                                    size: 22,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(2, 0, 10, 0),
-                                  child: Icon(
-                                    MorpheusIcons.linux,
-                                    color: Colors.white.withAlpha(100),
-                                    size: 22,
-                                  ),
-                                ),
-
-                                /** Pulsanti di login/play */
-                                if (Globals.isLoggedIn) ...[
-                                  /** Pulsante Play */
-                                  WidgetUtils.buildButton(
-                                    Icons.rocket_launch,
-                                    ColorUtils.dynamicAccentColor,
-                                    Colors.white,
-                                    () async {
-                                      if (AccountUtils.getAccount() != null) {
-                                        Globals.consolecontroller.clear();
-                                        if (!Globals.javaAdvSet) WidgetUtils.showLoadingCircle(context);
-                                        AccountUtils.refreshPremium(context); // Refresha il token minecraft
-
-                                        if (!Globals.javaAdvSet) {
-                                          // Installa java automaticamente
-                                          try {
-                                            await LauncherUtils.JavaAutoInstall(gameVersion);
-                                            Navigator.pop(context); // Chiudi il cerchiolino
-                                          } catch (e) {
-                                            Navigator.pop(context);
-                                            WidgetUtils.showMessageDialog(
-                                              context,
-                                              AppLocalizations.of(context)!.generic_error_msg,
-                                              "$e",
-                                              () => Navigator.pop(context),
-                                            );
-                                          }
-                                        }
-
-                                        try {
-                                          // Scarica il guard e il suo injector, estrailo e cancella lo zip scaricato
-                                          var fileName;
-                                          if (Platform.isWindows) {
-                                            fileName = "morpheus_guard_win.zip";
-                                          } else if (Platform.isMacOS) {
-                                            fileName = "morpheus_guard_osx.zip";
-                                          } else if (Platform.isLinux) {
-                                            fileName = "morpheus_guard_tux.zip";
-                                          }
-                                          final guardResponse = await http.get(Uri.parse("${Urls.morpheusBaseURL}/downloads/${fileName}"));
-                                          if (guardResponse.statusCode == 200) {
-                                            final zipPath = "${LauncherUtils.getApplicationFolder("morpheus")}/morpheus_guard.zip";
-                                            File(zipPath).writeAsBytesSync(guardResponse.bodyBytes);
-                                            final archive = ZipDecoder().decodeBytes(guardResponse.bodyBytes);
-                                            for (final file in archive) {
-                                              final filePath = "${LauncherUtils.getApplicationFolder("morpheus")}/${file.name}";
-                                              if (file.isFile) {
-                                                File(filePath)
-                                                  ..createSync(recursive: true)
-                                                  ..writeAsBytesSync(file.content);
-                                              } else {
-                                                Directory(filePath).createSync(recursive: true);
-                                              }
-                                            }
-                                            File(zipPath).deleteSync();
-                                          }
-                                        } catch (e) {
-                                          WidgetUtils.showMessageDialog(
-                                            context,
-                                            AppLocalizations.of(context)!.generic_error_msg,
-                                            "${e}",
-                                            () {
-                                              Navigator.pop(context);
-                                            },
-                                          );
-                                        }
-
-                                        try {
-                                          await getHwid(); // prova a prendere l'hwid usando il launcher (jar)
-                                          if (Globals.hwid != null) {
-                                            // se ci riesce fa la procedura automatica, altrimenti se fallisce ti fa fare quella semi-automatica
-                                            Globals.consolecontroller.text += "[LAUNCHER]: ${await LoginUtils.resetHwid(context, Globals.hwid)}\n";
-                                            runMorpheusClients(gameVersion, productId);
-                                          } else {
-                                            // apre il launcher con popup
-                                            await Process.start(
-                                              Globals.javapathcontroller.text,
-                                              [
-                                                '-jar',
-                                                '${LauncherUtils.getApplicationFolder("morpheus")}/Launcher.jar',
-                                                '-h',
-                                                'true',
-                                              ],
-                                            );
-                                            // apre un popup che ti chiede di incollare l'hwid
-                                            WidgetUtils.showPopup(
-                                              context,
-                                              AppLocalizations.of(context)!.cheats_hwid_reset_title,
-                                              <Widget>[
-                                                Material(
-                                                  elevation: 15,
-                                                  color: Colors.transparent,
-                                                  shadowColor: ColorUtils.defaultShadowColor,
-                                                  borderRadius: BorderRadius.circular(8),
-                                                  child: WidgetUtils.buildSettingTextItem(
-                                                    null,
-                                                    Colors.white /* Sfondo della textbox */,
-                                                    Colors.black /* Colore del font della textbox */,
-                                                    AppLocalizations.of(context)!.cheats_hwid_reset_hint,
-                                                    Globals.hwidcontroller,
-                                                    (value) => null,
-                                                  ),
-                                                ),
-                                              ],
-                                              <Widget>[
-                                                TextButton(
-                                                  child: const Text(
-                                                    "OK",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontFamily: 'Comfortaa',
-                                                      fontWeight: FontWeight.w700,
-                                                    ),
-                                                  ),
-                                                  onPressed: () async {
-                                                    Navigator.pop(context);
-                                                    Globals.consolecontroller.text += "[LAUNCHER]: ${await LoginUtils.resetHwid(context, Globals.hwidcontroller.text)}\n";
-                                                    runMorpheusClients(gameVersion, productId);
-                                                  },
-                                                ),
-                                              ],
-                                            );
-                                          }
-                                        } catch (e) {
-                                          WidgetUtils.showMessageDialog(
-                                            context,
-                                            AppLocalizations.of(context)!.generic_error_msg,
-                                            "${e}",
-                                            () {
-                                              Navigator.pop(context);
-                                            },
-                                          );
-                                        }
-                                      } else {
-                                        WidgetUtils.showMessageDialog(
-                                          context,
-                                          AppLocalizations.of(context)!.account_required_title,
-                                          AppLocalizations.of(context)!.account_required_msg,
-                                          () {
-                                            Navigator.pop(context);
-                                            setState(() => Globals.NavSelected = 5);
-                                          },
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ] else ...[
-                                  /** Pulsante login che compare se l'utente non è loggato */
-                                  WidgetUtils.buildButton(
-                                    Icons.login,
-                                    ColorUtils.dynamicAccentColor,
-                                    Colors.white,
-                                    () async => {
-                                      if (await LoginUtils.loadSession() != '') ...{
-                                        /** TEST PASSED */
-                                        LoginUtils.login(
-                                          context,
-                                          () => setState(() {
-                                            Globals.isLoggedIn = Globals.isLoggedIn;
-                                          }),
-                                        ),
-                                      } else ...{
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => LoginPage(
-                                              handlelogin: () => {
-                                                LoginUtils.login(
-                                                  context,
-                                                  (() => setState(() => Navigator.pop(context))), /** TEST PASSED */
-                                                ),
-                                              },
-                                              handleregister: () => {
-                                                LoginUtils.register(
-                                                  context,
-                                                  (() => setState(() => Navigator.pop(context))), /** TEST PASSED */
-                                                ),
-                                              },
-                                              handlereset: () => {
-                                                LoginUtils.pwdreset(
-                                                  context,
-                                                  (() => setState(() => Navigator.pop(context))), /** TEST PASSED */
-                                                ),
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                      },
-                                    },
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void runMorpheusClients(dynamic gameVersion, dynamic productId) async {
-    if (Platform.isWindows) {
-      final injectorFile = File("${LauncherUtils.getApplicationFolder("morpheus")}/morpheus_guard_init.exe");
-      if (injectorFile.existsSync()) await Process.start(injectorFile.path, []); // Avvia l'injector se è presente nella cartella
-    }
-
-    List<String> args = [];
-    args.addAll([
-      "-Duser.dir=${Globals.gamefoldercontroller.text}",
-      "-Djava.library.path=${Globals.gamefoldercontroller.text}/versions/${gameVersion}/natives/",
-      ...LauncherUtils.buildJVMOptimizedArgs(Globals.javaramcontroller.text),
-      "-XX:+DisableAttachMechanism",
-      "-jar",
-      "${LauncherUtils.getApplicationFolder("morpheus")}/Launcher.jar",
-      "-productID",
-      productId,
-      "-accessToken",
-      Globals.morpheusAuthResponse["data"]["accessToken"],
-      "-minecraftToken",
-      "${AccountUtils.getAccount()?.accessToken}",
-      "-minecraftUsername",
-      "${AccountUtils.getAccount()?.username}",
-      "-minecraftUUID",
-      "${AccountUtils.getAccount()?.uuid}",
-    ]);
-
-    if (Globals.customFolderSet) {
-      args.addAll([
-        "-gameFolder",
-        "${Globals.gamefoldercontroller.text}",
-      ]);
-    }
-
-    Process process = await Process.start(Globals.javapathcontroller.text, args);
-    if (Globals.showConsole) {
-      WidgetUtils.showConsole(context, process);
-    } else {
-      process.stdout.transform(systemEncoding.decoder).forEach((line) {});
-      process.stderr.transform(systemEncoding.decoder).forEach((line) {});
-    }
-    await process.exitCode;
-  }
-
   /////////// MODDING //////////////
 
   ListView buildModdedList() {
@@ -1712,19 +1296,6 @@ class _MainPageState extends State<MainPage> {
               style: WidgetUtils.customTextStyle(20, FontWeight.w300, ColorUtils.primaryFontColor),
             ),
           ),
-        ),
-
-        /** Setting per la nascondere i clients */
-        WidgetUtils.buildSettingSwitchItem(
-          AppLocalizations.of(context)!.settings_show_clients,
-          "showClients",
-          MorpheusIcons.hacks,
-          ColorUtils.dynamicPrimaryForegroundColor,
-          ColorUtils.defaultShadowColor,
-          Globals.showClients,
-          (value) {
-            setState(() => Globals.showClients = value);
-          },
         ),
 
         /** Setting per nascondere tutto tranne le release */
@@ -2788,230 +2359,6 @@ class WidgetUtils {
       ),
       child: child,
     );
-  }
-}
-
-class LoginUtils {
-  /////////////////////////////////
-  // MORPHEUS ACCOUNT NETWORKING //
-  /////////////////////////////////
-
-  static loadSession() {
-    return Globals.morpheusSession;
-  }
-
-  static Future<void> saveSession() async {
-    Globals.morpheusSession = Globals.morpheusAuthResponse["data"]["refreshToken"];
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('morpheusSession', Globals.morpheusSession);
-  }
-
-  /** LOGIN */
-  static void login(dynamic context, Function callback) async {
-    // Mostra l'animazione di caricamento
-    WidgetUtils.showLoadingCircle(context);
-
-    // Autentica l'utente
-    var response;
-    if (await loadSession() != '') {
-      response = await http.post(
-        Uri.parse('${Urls.morpheusApiURL}/login/authtoken'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'refreshToken': await loadSession(),
-        }),
-      );
-    } else {
-      response = await http.post(
-        Uri.parse('${Urls.morpheusApiURL}/login/credentials'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'username': Globals.usercontroller.text.trim(),
-          'password': Globals.passwordcontroller.text.trim(),
-        }),
-      );
-    }
-
-    // Toglie l'animazione
-    Navigator.pop(context);
-
-    Globals.morpheusAuthResponse = jsonDecode(response.body);
-    switch (response.statusCode) {
-      case 200: // SUCCESS
-        {
-          if (Globals.morpheusAuthResponse != null && Globals.morpheusAuthResponse["data"] != null) {
-            saveSession();
-            userinfo(context, callback);
-          }
-        }
-        break;
-      default: // FAIL
-        {
-          WidgetUtils.showMessageDialog(
-            context,
-            AppLocalizations.of(context)!.generic_error_msg,
-            "${Globals.morpheusAuthResponse["message"]}",
-            () async {
-              Globals.morpheusSession = '';
-              final prefs = await SharedPreferences.getInstance();
-              prefs.setString('morpheusSession', Globals.morpheusSession);
-              Globals.isLoggedIn = false;
-              Navigator.pop(context);
-            },
-          );
-        }
-        break;
-    }
-  }
-
-  /** REGISTER */
-  static void register(dynamic context, Function callback) async {
-    // Mostra l'animazione di caricamento
-    WidgetUtils.showLoadingCircle(context);
-
-    // Registra l'utente
-    final response = await http.post(
-      Uri.parse('${Urls.morpheusApiURL}/register'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'username': Globals.usercontroller.text.trim(),
-        'password': Globals.passwordcontroller.text.trim(),
-      }),
-    );
-
-    // Toglie l'animazione
-    Navigator.pop(context);
-
-    Globals.morpheusAuthResponse = jsonDecode(response.body);
-    switch (response.statusCode) {
-      case 200: // SUCCESS
-        {
-          if (Globals.morpheusAuthResponse != null && Globals.morpheusAuthResponse["data"] != null) {
-            saveSession();
-            userinfo(context, callback);
-          }
-        }
-        break;
-      default: // FAIL
-        {
-          WidgetUtils.showMessageDialog(
-            context,
-            AppLocalizations.of(context)!.generic_error_msg,
-            "${Globals.morpheusAuthResponse["message"]}",
-            () {
-              Globals.isLoggedIn = false;
-              callback();
-            },
-          );
-        }
-        break;
-    }
-  }
-
-  /** PASSWORD RESET */
-  static void pwdreset(dynamic context, Function callback) async {
-    // Mostra l'animazione di caricamento
-    WidgetUtils.showLoadingCircle(context);
-
-    // Resetta la password
-    final response = await http.post(
-      Uri.parse('${Urls.morpheusApiURL}/pwdreset'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'username': Globals.usercontroller.text.trim(),
-        'password': Globals.passwordcontroller.text.trim(),
-        'code': Globals.codecontroller.text.trim(),
-      }),
-    );
-
-    // Toglie l'animazione
-    Navigator.pop(context);
-
-    Globals.morpheusAuthResponse = jsonDecode(response.body);
-    switch (response.statusCode) {
-      case 200:
-        {
-          if (Globals.morpheusAuthResponse != null && Globals.morpheusAuthResponse["data"] != null) {
-            saveSession();
-            Navigator.pop(context);
-            userinfo(context, callback);
-          }
-        }
-        break;
-      default:
-        {
-          WidgetUtils.showMessageDialog(
-            context,
-            AppLocalizations.of(context)!.generic_error_msg,
-            "${Globals.morpheusAuthResponse["message"]}",
-            () {
-              Globals.isLoggedIn = false;
-              callback();
-            },
-          );
-        }
-        break;
-    }
-  }
-
-  /** INFO DELL'UTENTE PARTENDO DAL TOKEN */
-  static void userinfo(dynamic context, Function callback) async {
-    final response = await http.post(
-      Uri.parse('${Urls.morpheusApiURL}/userinfo'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'accessToken': Globals.morpheusAuthResponse["data"]["accessToken"],
-      }),
-    );
-    switch (response.statusCode) {
-      case 200:
-        {
-          Globals.morpheusUserResponse = jsonDecode(response.body);
-          Globals.prodottoList.clear();
-          for (int i = 0; i < Globals.morpheusUserResponse["data"]["products"].length; i++) {
-            dynamic prodotto = await prodinfo(Globals.morpheusUserResponse["data"]["products"][i]);
-            Globals.prodottoList.add(prodotto["data"]);
-          }
-          Globals.isLoggedIn = true;
-          callback();
-        }
-        break;
-      default:
-        Globals.isLoggedIn = false;
-        callback();
-        break;
-    }
-  }
-
-  /** HWID RESET */
-  static dynamic resetHwid(dynamic context, dynamic hwid1) async {
-    final response = await http.post(
-      Uri.parse('${Urls.morpheusApiURL}/hwidreset'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'accessToken': Globals.morpheusAuthResponse["data"]["accessToken"],
-        'hwid': hwid1,
-      }),
-    );
-
-    Globals.morpheusUserResponse = jsonDecode(response.body);
-    if (Globals.morpheusUserResponse["success"] == false) {
-      return "${Globals.morpheusUserResponse["message"]}";
-    } else {
-      return "${Globals.morpheusUserResponse["message"]}";
-    }
   }
 }
 

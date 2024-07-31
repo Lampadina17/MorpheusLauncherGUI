@@ -8,12 +8,6 @@
   "home_news_title": "Registro de cambios",
   "home_news_empty_msg": "No se puede recuperar el registro de cambios de Mojang, por favor permite este programa en tu firewall",
 
-  "cheats_empty_title": "No se pueden recuperar los productos Morpheus, por favor permite este programa en tu firewall",
-  "cheats_empty_products": "Esta cuenta no tiene ningún producto ¯\\_(ツ)_/¯",
-  "cheats_hwid_button": "HWID: Haz clic aquí para restablecer",
-  "cheats_hwid_reset_title": "Restablecimiento manual de HWID",
-  "cheats_hwid_reset_hint": "Pega aquí el HWID",
-
   "vanilla_empty_title": "No se encontró ninguna versión Vanilla",
   "vanilla_release_title": "Última versión",
   "vanilla_snapshot_title": "Último snapshot",
@@ -37,7 +31,6 @@
   "settings_theme": "Tema del lanzador",
   "settings_misc_label": "Varios",
   "settings_console_switch": "Mostrar la consola al iniciar el juego",
-  "settings_show_clients": "Mostrar productos de Morpheus",
   "settings_custom_folder_title": "Carpeta de juego personalizada",
   "settings_custom_folder": "Directorio del juego",
   "settings_credits_title": "Agradecimientos",
@@ -77,15 +70,5 @@
   "console_exit_msg1": "¿Estás seguro de que quieres cerrar la consola?",
   "console_exit_msg2": "Si lo haces, ¡no podrás entender lo que está haciendo el juego!",
   "console_exit_kill": "Terminar el juego y cerrar",
-  "console_exit_only": "Cerrar",
-
-  "username_label": "Nombre de usuario",
-  "password_label": "Contraseña",
-  "new_password_label": "Nueva Contraseña",
-  "otp_code_label": "Código de reinicio (OTP)",
-
-  "login_button": "Iniciar sesión",
-  "register_button": "Registrarse",
-  "forgot_password_question": "¿Olvidaste tu contraseña?",
-  "reset_password_button": "Confirmar"
+  "console_exit_only": "Cerrar"
 }

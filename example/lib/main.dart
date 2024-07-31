@@ -12,8 +12,6 @@ import 'package:morpheus_launcher_gui/views/main_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
 
-import 'utils/morpheus_utils.dart';
-
 Future<void> main() async {
   if (Platform.isWindows) {
     int? buildNumber = getBuildNumber(Platform.operatingSystemVersion);
@@ -105,8 +103,6 @@ class MyAppBodyState extends State<MyAppBody> {
     Globals.gamefoldercontroller.text = prefs.getString('gameFolderPath') ?? LauncherUtils.getApplicationFolder("minecraft");
     Globals.selectedWindowTheme = prefs.getString('themeSet') ?? getDefaultTheme();
     Globals.showConsole = prefs.getBool('showConsole') ?? true;
-    Globals.showClients = prefs.getBool('showClients') ?? false;
-    Globals.morpheusSession = prefs.getString('morpheusSession') ?? '';
     Globals.fullTransparent = prefs.getBool('fullTransparent') ?? false;
 
     ColorUtils.isMaterial = (Globals.selectedWindowTheme.contains('Material'));
@@ -125,8 +121,6 @@ class MyAppBodyState extends State<MyAppBody> {
     if (!prefs.containsKey('gameFolderPath')) prefs.setString('gameFolderPath', Globals.gamefoldercontroller.text);
     if (!prefs.containsKey('themeSet')) prefs.setString('themeSet', Globals.selectedWindowTheme);
     if (!prefs.containsKey('showConsole')) prefs.setBool('showConsole', Globals.showConsole);
-    if (!prefs.containsKey('showClients')) prefs.setBool('showClients', Globals.showClients);
-    if (!prefs.containsKey('morpheusSession')) prefs.setString('morpheusSession', Globals.morpheusSession);
     if (!prefs.containsKey('fullTransparent')) prefs.setBool('fullTransparent', Globals.fullTransparent);
 
     Window.setEffect(
@@ -165,11 +159,6 @@ class MyAppBodyState extends State<MyAppBody> {
     }
     try {
       Globals.optifineVersions = await VersionUtils.getOptifine();
-    } catch (e) {
-      print(e);
-    }
-    try {
-      await getAllProducts();
     } catch (e) {
       print(e);
     }
