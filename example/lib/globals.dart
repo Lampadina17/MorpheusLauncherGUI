@@ -15,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
 
 class Globals {
-  static final buildVersion = "Ver 2.0.1";
+  static final buildVersion = "Ver 2.1.0";
   static final windowTitle = "Morpheus Launcher";
   static final borderRadius = 14.0;
 
@@ -23,18 +23,15 @@ class Globals {
   static var showOnlyReleases = false;
   static var darkModeTheme = false;
   static var showConsole = false;
-  static var showClients = false;
   static var javaAdvSet = false;
   static var customFolderSet = false;
   static var selectedWindowTheme = '';
   static var accentColor = 0;
-  static var morpheusSession = '';
   static var fullTransparent = false;
 
   //////////////////////////////
   ///// Sezione Variabili //////
   //////////////////////////////
-  static late List<Map<String, dynamic>> prodottoList = [];
   static late List<Account> accounts = readAccountListFromJson("${LauncherUtils.getApplicationFolder("morpheus")}/accounts.json");
   static late List<String> pinnedVersions = [];
   static late List<String> WindowThemes = [];
@@ -45,9 +42,6 @@ class Globals {
   static late var hwid = null;
 
   /** Sezione textfield */
-  static final usercontroller = TextEditingController();
-  static final passwordcontroller = TextEditingController();
-  static final codecontroller = TextEditingController();
   static final javapathcontroller = TextEditingController();
   static final javaramcontroller = TextEditingController();
   static final javavmcontroller = TextEditingController();
@@ -56,11 +50,6 @@ class Globals {
   static final usernamecontroller = TextEditingController();
   static final consolecontroller = TextEditingController();
   static final hwidcontroller = TextEditingController();
-
-  /** Variabili usate per memorizzare le risposte POST/GET */
-  static late var morpheusAuthResponse = null;
-  static late var morpheusUserResponse = null;
-  static late var morpheusProductsResponse = null;
 
   /** Fabric */
   static late var fabricGameVersionsResponse = null;
@@ -386,8 +375,6 @@ class LauncherUtils {
   static bool isOnline() {
     if (Globals.vanillaNewsResponse != null) return true;
     if (Globals.vanillaVersionsResponse != null) return true;
-    if (Globals.morpheusProductsResponse != null && Globals.morpheusProductsResponse["message"] != null) return true;
-    if (Globals.morpheusAuthResponse != null && Globals.morpheusAuthResponse["message"] != null) return true;
 
     return false;
   }

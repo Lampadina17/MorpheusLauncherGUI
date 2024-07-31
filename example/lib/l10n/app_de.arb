@@ -8,12 +8,6 @@
   "home_news_title": "Änderungsprotokoll",
   "home_news_empty_msg": "Kann das Minecraft-Änderungsprotokoll von Mojang nicht abrufen. Bitte erlauben Sie diesem Programm den Zugriff durch Ihre Firewall",
 
-  "cheats_empty_title": "Kann Morpheus-Produkte nicht abrufen. Bitte erlauben Sie diesem Programm den Zugriff durch Ihre Firewall",
-  "cheats_empty_products": "Dieses Konto hat keine Produkte ¯\\_(ツ)_/¯",
-  "cheats_hwid_button": "HWID: Hier klicken, um zurückzusetzen",
-  "cheats_hwid_reset_title": "Manuelles HWID-Reset",
-  "cheats_hwid_reset_hint": "Fügen Sie die HWID hier ein",
-
   "vanilla_empty_title": "Keine Vanilla-Minecraft-Versionen gefunden",
   "vanilla_release_title": "Neueste Version",
   "vanilla_snapshot_title": "Neueste Snapshot-Version",
@@ -37,7 +31,6 @@
   "settings_theme": "Launcher-Thema",
   "settings_misc_label": "Verschiedenes",
   "settings_console_switch": "Konsole beim Spielstart anzeigen",
-  "settings_show_clients": "Morpheus-Produkte anzeigen",
   "settings_custom_folder_title": "Benutzerdefinierter Spieleordner",
   "settings_custom_folder": "Spielverzeichnis",
   "settings_credits_title": "Danksagungen",
@@ -77,15 +70,5 @@
   "console_exit_msg1": "Sind Sie sicher, dass Sie die Konsole schließen möchten?",
   "console_exit_msg2": "Wenn Sie die Konsole schließen, können Sie nicht mehr lesen, was das Spiel tut",
   "console_exit_kill": "Spiel beenden und verlassen",
-  "console_exit_only": "Verlassen",
-
-  "username_label": "Benutzername",
-  "password_label": "Passwort",
-  "new_password_label": "Neues Passwort",
-  "otp_code_label": "Reset-Code (OTP)",
-
-  "login_button": "Anmelden",
-  "register_button": "Registrieren",
-  "forgot_password_question": "Passwort vergessen?",
-  "reset_password_button": "Bestätigen"
+  "console_exit_only": "Verlassen"
 }

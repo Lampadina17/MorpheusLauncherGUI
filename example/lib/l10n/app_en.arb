@@ -8,12 +8,6 @@
   "home_news_title": "Changelog",
   "home_news_empty_msg": "Cannot fetch minecraft changelog from mojang, please allow this program through your firewall",
 
-  "cheats_empty_title": "Cannot fetch morpheus products, please allow this program through your firewall",
-  "cheats_empty_products": "This account doesn't have any products ¯\\_(ツ)_/¯",
-  "cheats_hwid_button": "HWID: Click here to reset",
-  "cheats_hwid_reset_title": "Manual Hwid Reset",
-  "cheats_hwid_reset_hint": "Paste the hwid here",
-
   "vanilla_empty_title": "No vanilla minecraft versions found",
   "vanilla_release_title": "Latest release",
   "vanilla_snapshot_title": "Latest snapshot",
@@ -37,7 +31,6 @@
   "settings_theme": "Launcher theme",
   "settings_misc_label": "Miscellaneous",
   "settings_console_switch": "Show console on game start",
-  "settings_show_clients": "Show morpheus products",
   "settings_custom_folder_title": "Custom game folder",
   "settings_custom_folder": "Game directory",
   "settings_credits_title": "Acknowledgments",
@@ -77,15 +70,5 @@
   "console_exit_msg1": "Are you sure you want to close console?",
   "console_exit_msg2": "if you close the console you can't read what the game does anymore",
   "console_exit_kill": "Kill game and Exit",
-  "console_exit_only": "Exit",
-
-  "username_label": "Username",
-  "password_label": "Password",
-  "new_password_label": "New Password",
-  "otp_code_label": "Reset code (OTP)",
-
-  "login_button": "Login",
-  "register_button": "Register",
-  "forgot_password_question": "Forgot Password?",
-  "reset_password_button": "Confirm"
+  "console_exit_only": "Exit"
 }

@@ -8,12 +8,6 @@
   "home_news_title": "Dziennik zmian",
   "home_news_empty_msg": "Nie można pobrać dziennika zmian Minecrafta od Mojangu. Proszę zezwolić na dostęp temu programowi przez zaporę ogniową",
 
-  "cheats_empty_title": "Nie można pobrać produktów Morpheusa. Proszę zezwolić na dostęp temu programowi przez zaporę ogniową",
-  "cheats_empty_products": "To konto nie ma żadnych produktów ¯\\_(ツ)_/¯",
-  "cheats_hwid_button": "HWID: Kliknij tutaj, aby zresetować",
-  "cheats_hwid_reset_title": "Ręczny reset HWID",
-  "cheats_hwid_reset_hint": "Wklej tutaj identyfikator HWID",
-
   "vanilla_empty_title": "Nie znaleziono wersji Vanilla Minecrafta",
   "vanilla_release_title": "Najnowsza wersja",
   "vanilla_snapshot_title": "Najnowsza wersja snapshot",
@@ -37,7 +31,6 @@
   "settings_theme": "Motyw launchera",
   "settings_misc_label": "Różne",
   "settings_console_switch": "Pokaż konsolę przy uruchamianiu gry",
-  "settings_show_clients": "Pokaż produkty Morpheus",
   "settings_custom_folder_title": "Niestandardowy folder gry",
   "settings_custom_folder": "Katalog gry",
   "settings_credits_title": "Podziękowania",
@@ -77,15 +70,5 @@
   "console_exit_msg1": "Czy na pewno chcesz zamknąć konsolę?",
   "console_exit_msg2": "Jeśli zamkniesz konsolę, nie będziesz mógł czytać, co robi gra",
   "console_exit_kill": "Zabij grę i zamknij",
-  "console_exit_only": "Zamknij",
-
-  "username_label": "Nazwa użytkownika",
-  "password_label": "Hasło",
-  "new_password_label": "Nowe hasło",
-  "otp_code_label": "Kod resetujący (OTP)",
-
-  "login_button": "Zaloguj się",
-  "register_button": "Zarejestruj",
-  "forgot_password_question": "Zapomniałeś hasła?",
-  "reset_password_button": "Potwierdź"
+  "console_exit_only": "Zamknij"
 }
