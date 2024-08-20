@@ -1353,7 +1353,7 @@ class _MainPageState extends State<MainPage> {
                       /** Java selection */
                       WidgetUtils.buildSettingTextItem(
                         Padding(
-                          padding: isAppleSilicon() ? EdgeInsets.all(0) : EdgeInsets.fromLTRB(0, 3, 3, 0),
+                          padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -1410,7 +1410,7 @@ class _MainPageState extends State<MainPage> {
                       /** Java ram */
                       WidgetUtils.buildSettingTextItem(
                         Padding(
-                          padding: isAppleSilicon() ? EdgeInsets.all(0) : EdgeInsets.fromLTRB(0, 3, 3, 0),
+                          padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -1435,7 +1435,7 @@ class _MainPageState extends State<MainPage> {
                       /** Java VM args */
                       WidgetUtils.buildSettingTextItem(
                         Padding(
-                          padding: isAppleSilicon() ? EdgeInsets.all(0) : EdgeInsets.fromLTRB(0, 3, 3, 0),
+                          padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -1460,7 +1460,7 @@ class _MainPageState extends State<MainPage> {
                       /** Launcher args */
                       WidgetUtils.buildSettingTextItem(
                         Padding(
-                          padding: isAppleSilicon() ? EdgeInsets.all(0) : EdgeInsets.fromLTRB(0, 3, 3, 0),
+                          padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -1514,7 +1514,7 @@ class _MainPageState extends State<MainPage> {
                   padding: EdgeInsets.fromLTRB(6, 0, 6, 4),
                   child: WidgetUtils.buildSettingTextItem(
                     Padding(
-                      padding: isAppleSilicon() ? EdgeInsets.all(0) : EdgeInsets.fromLTRB(0, 3, 3, 0),
+                      padding: EdgeInsets.fromLTRB(0, 3, 3, 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -1580,10 +1580,6 @@ class _MainPageState extends State<MainPage> {
         ),
       ],
     );
-  }
-
-  bool isAppleSilicon() {
-    return extractPlatformInfo(Platform.version).contains("macos_arm64");
   }
 
   String extractPlatformInfo(String versionString) {
