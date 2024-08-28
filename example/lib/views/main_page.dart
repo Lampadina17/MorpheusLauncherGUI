@@ -873,7 +873,7 @@ class _MainPageState extends State<MainPage> {
                           AppLocalizations.of(context)!.account_required_msg,
                           () {
                             Navigator.pop(context);
-                            setState(() => Globals.NavSelected = 5);
+                            setState(() => Globals.NavSelected = 4);
                           },
                         );
                       }
