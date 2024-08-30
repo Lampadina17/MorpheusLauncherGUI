@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:morpheus_launcher_gui/globals.dart';
@@ -159,6 +160,11 @@ class MyAppBodyState extends State<MyAppBody> {
     }
     try {
       Globals.optifineVersions = await VersionUtils.getOptifine();
+    } catch (e) {
+      print(e);
+    }
+    try {
+      await DefaultCacheManager().emptyCache();
     } catch (e) {
       print(e);
     }
