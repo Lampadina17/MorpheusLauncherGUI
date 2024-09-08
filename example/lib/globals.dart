@@ -15,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
 
 class Globals {
-  static final buildVersion = "Ver 2.1.3";
+  static final buildVersion = "Ver 2.2.0";
   static final windowTitle = "Morpheus Launcher";
   static final borderRadius = 14.0;
 
@@ -37,9 +37,6 @@ class Globals {
   static late List<String> WindowThemes = [];
 
   static int NavSelected = 0, AccountSelected = 0;
-  static bool isLoggedIn = false;
-
-  static late var hwid = null;
 
   /** Sezione textfield */
   static final javapathcontroller = TextEditingController();
@@ -49,7 +46,7 @@ class Globals {
   static final gamefoldercontroller = TextEditingController();
   static final usernamecontroller = TextEditingController();
   static final consolecontroller = TextEditingController();
-  static final hwidcontroller = TextEditingController();
+  static final diagnosticcontroller = TextEditingController();
 
   /** Fabric */
   static late var fabricGameVersionsResponse = null;
@@ -72,7 +69,6 @@ class Urls {
   // Vari
   static final skinURL = "https://minepic.org";
   static final morpheusBaseURL = "https://morpheuslauncher.it";
-  static final morpheusApiURL = "${morpheusBaseURL}/api";
   static final fabricApiURL = "https://meta.fabricmc.net/";
   static final forgeVersionsURL = "https://files.minecraftforge.net/net/minecraftforge/forge/maven-metadata.json";
   static final optifineVersionsURL = "${morpheusBaseURL}/downloads/optifine.json";

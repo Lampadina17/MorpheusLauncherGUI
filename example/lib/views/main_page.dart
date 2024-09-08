@@ -27,6 +27,7 @@ import 'package:system_theme/system_theme.dart';
 import 'package:text_divider/text_divider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:util_simple_3d/util_simple_3d.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -1549,6 +1550,107 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
 
+        /* Tasti vari*/
+        WidgetUtils.buildSettingContainerItem(
+          Row(
+            children: [
+              /** Bottone per pulire la cache */
+              WidgetUtils.buildTextButton(
+                Colors.redAccent,
+                () async {
+                  await DefaultCacheManager().emptyCache();
+                },
+                "Clear skins cache", // TODO
+              ),
+
+              /** Dati di diagnostica */
+              WidgetUtils.buildTextButton(
+                ColorUtils.dynamicSecondaryForegroundColor,
+                () {
+                  Globals.diagnosticcontroller.clear();
+                  Globals.diagnosticcontroller.text += "------- System info -------\n";
+                  Globals.diagnosticcontroller.text += "Build: ${Globals.buildVersion}\n";
+                  Globals.diagnosticcontroller.text += "Platform: ${Platform.version}\n";
+                  Globals.diagnosticcontroller.text += "Operating system: ${Platform.operatingSystemVersion}\n";
+                  Globals.diagnosticcontroller.text += "Locale: ${Platform.localeName}\n";
+                  Globals.diagnosticcontroller.text += "Machine name: ${Platform.localHostname}\n";
+                  Globals.diagnosticcontroller.text += "CPU cores: ${Platform.numberOfProcessors}\n";
+                  Globals.diagnosticcontroller.text += "Java executable: ${Globals.javapathcontroller.text}\n";
+                  Globals.diagnosticcontroller.text += "Java Ram: ${Globals.javaramcontroller.text}\n";
+                  Globals.diagnosticcontroller.text += "Java advanced settings: ${Globals.javaAdvSet}\n";
+                  Globals.diagnosticcontroller.text += "Java args: ${Globals.javavmcontroller.text}\n";
+                  Globals.diagnosticcontroller.text += "Launcher args: ${Globals.javalaunchercontroller.text}\n";
+                  Globals.diagnosticcontroller.text += "------- Installed versions -------\n";
+                  for (var version in VersionUtils.getMinecraftOfflineVersions(false)) {
+                    Globals.diagnosticcontroller.text += "Type: ${version["type"]}, Version: ${version["id"]}\n";
+                  }
+                  if (Globals.accounts.isNotEmpty) {
+                    Globals.diagnosticcontroller.text += "------- Accounts -------\n";
+                    for (var account in Globals.accounts) {
+                      Globals.diagnosticcontroller.text +=
+                          "Username: ${account.username}, UUID: ${account.uuid}, Premium: ${account.isPremium}, Slim skin: ${account.isSlimSkin}\n";
+                    }
+                  }
+
+                  WidgetUtils.showPopup(
+                    context,
+                    "Diagnostic data", // TODO
+                    <Widget>[
+                      Container(
+                        color: Colors.white.withAlpha(128),
+                        padding: new EdgeInsets.all(2.0),
+                        child: new ConstrainedBox(
+                          constraints: new BoxConstraints(
+                            minWidth: MediaQuery.of(context).size.width,
+                            maxWidth: MediaQuery.of(context).size.width,
+                            minHeight: 75,
+                            maxHeight: MediaQuery.of(context).size.height,
+                          ),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            reverse: true,
+
+                            // here's the actual text box
+                            child: TextField(
+                              keyboardType: TextInputType.multiline,
+                              maxLines: null,
+                              controller: Globals.diagnosticcontroller,
+                              readOnly: true,
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: "JetbrainsMono",
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    [
+                      TextButton(
+                        child: Text(
+                          AppLocalizations.of(context)!.console_exit_only,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Comfortaa',
+                            fontWeight: FontWeight.w700,
+                            color: ColorUtils.dynamicAccentColor.withAlpha(255),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  );
+                },
+                "Diagnostic data", // TODO
+              ),
+            ],
+          ),
+        ),
+
         /** Separatore */
         Padding(
           padding: EdgeInsets.symmetric(vertical: 5),
@@ -1609,7 +1711,7 @@ class _MainPageState extends State<MainPage> {
             child: Text(
               AppLocalizations.of(context)!.account_empty_msg,
               textAlign: TextAlign.center,
-              style: WidgetUtils.customTextStyle(Globals.isLoggedIn ? 22 : 14, FontWeight.w300, ColorUtils.primaryFontColor),
+              style: WidgetUtils.customTextStyle(14, FontWeight.w300, ColorUtils.primaryFontColor),
             ),
           ),
         ],
@@ -2117,6 +2219,37 @@ class WidgetUtils {
                     icon,
                     color: iconColor,
                     size: 20,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          20.0,
+          ColorUtils.defaultShadowColor,
+        ),
+      ),
+    );
+  }
+
+  static Widget buildTextButton(Color color, VoidCallback onPressed, String text) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(7, 7, 0, 7),
+      child: GestureDetector(
+        onTap: onPressed,
+        child: backShadow(
+          MouseRegion(
+            onEnter: (e) => {if (Platform.isMacOS) Globals.hapticFeedback.generic()},
+            child: Material(
+              elevation: 15,
+              color: color,
+              shadowColor: Colors.transparent,
+              borderRadius: BorderRadius.circular(Globals.borderRadius - 4),
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: Center(
+                  child: Text(
+                    text,
+                    style: customTextStyle(16, FontWeight.w500, ColorUtils.primaryFontColor),
                   ),
                 ),
               ),
