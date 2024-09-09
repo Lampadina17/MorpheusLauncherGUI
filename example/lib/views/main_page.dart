@@ -1560,92 +1560,16 @@ class _MainPageState extends State<MainPage> {
                 () async {
                   await DefaultCacheManager().emptyCache();
                 },
-                "Clear skins cache", // TODO
+                AppLocalizations.of(context)!.settings_clear_cache,
               ),
 
               /** Dati di diagnostica */
               WidgetUtils.buildTextButton(
                 ColorUtils.dynamicSecondaryForegroundColor,
                 () {
-                  Globals.diagnosticcontroller.clear();
-                  Globals.diagnosticcontroller.text += "------- System info -------\n";
-                  Globals.diagnosticcontroller.text += "Build: ${Globals.buildVersion}\n";
-                  Globals.diagnosticcontroller.text += "Platform: ${Platform.version}\n";
-                  Globals.diagnosticcontroller.text += "Operating system: ${Platform.operatingSystemVersion}\n";
-                  Globals.diagnosticcontroller.text += "Locale: ${Platform.localeName}\n";
-                  Globals.diagnosticcontroller.text += "Machine name: ${Platform.localHostname}\n";
-                  Globals.diagnosticcontroller.text += "CPU cores: ${Platform.numberOfProcessors}\n";
-                  Globals.diagnosticcontroller.text += "Java executable: ${Globals.javapathcontroller.text}\n";
-                  Globals.diagnosticcontroller.text += "Java Ram: ${Globals.javaramcontroller.text}\n";
-                  Globals.diagnosticcontroller.text += "Java advanced settings: ${Globals.javaAdvSet}\n";
-                  Globals.diagnosticcontroller.text += "Java args: ${Globals.javavmcontroller.text}\n";
-                  Globals.diagnosticcontroller.text += "Launcher args: ${Globals.javalaunchercontroller.text}\n";
-                  Globals.diagnosticcontroller.text += "------- Installed versions -------\n";
-                  for (var version in VersionUtils.getMinecraftOfflineVersions(false)) {
-                    Globals.diagnosticcontroller.text += "Type: ${version["type"]}, Version: ${version["id"]}\n";
-                  }
-                  if (Globals.accounts.isNotEmpty) {
-                    Globals.diagnosticcontroller.text += "------- Accounts -------\n";
-                    for (var account in Globals.accounts) {
-                      Globals.diagnosticcontroller.text +=
-                          "Username: ${account.username}, UUID: ${account.uuid}, Premium: ${account.isPremium}, Slim skin: ${account.isSlimSkin}\n";
-                    }
-                  }
-
-                  WidgetUtils.showPopup(
-                    context,
-                    "Diagnostic data", // TODO
-                    <Widget>[
-                      Container(
-                        color: Colors.white.withAlpha(128),
-                        padding: new EdgeInsets.all(2.0),
-                        child: new ConstrainedBox(
-                          constraints: new BoxConstraints(
-                            minWidth: MediaQuery.of(context).size.width,
-                            maxWidth: MediaQuery.of(context).size.width,
-                            minHeight: 75,
-                            maxHeight: MediaQuery.of(context).size.height,
-                          ),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            reverse: true,
-
-                            // here's the actual text box
-                            child: TextField(
-                              keyboardType: TextInputType.multiline,
-                              maxLines: null,
-                              controller: Globals.diagnosticcontroller,
-                              readOnly: true,
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: "JetbrainsMono",
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                    [
-                      TextButton(
-                        child: Text(
-                          AppLocalizations.of(context)!.console_exit_only,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontFamily: 'Comfortaa',
-                            fontWeight: FontWeight.w700,
-                            color: ColorUtils.dynamicAccentColor.withAlpha(255),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  );
+                  WidgetUtils.showDiagnostic(context);
                 },
-                "Diagnostic data", // TODO
+                AppLocalizations.of(context)!.settings_diagnostic_title,
               ),
             ],
           ),
@@ -1664,7 +1588,6 @@ class _MainPageState extends State<MainPage> {
 
         /** Info */
         Center(
-          // TODO: add credits
           child: GestureDetector(
             child: Text(
               "build: ${Globals.buildVersion} on ${extractPlatformInfo(Platform.version)} - morpheuslauncher.it (cc by-nc-sa) 2023-2024",
@@ -2365,6 +2288,16 @@ class WidgetUtils {
         await IconButton(
           iconSize: 30,
           icon: const Icon(
+            Icons.help,
+            color: Colors.blueAccent,
+          ),
+          onPressed: () {
+            WidgetUtils.showDiagnostic(context);
+          },
+        ),
+        await IconButton(
+          iconSize: 30,
+          icon: const Icon(
             Icons.cleaning_services,
             color: Colors.blueAccent,
           ),
@@ -2470,6 +2403,90 @@ class WidgetUtils {
     process.stderr.transform(systemEncoding.decoder).forEach((line) {
       Globals.consolecontroller.text += line.toString();
     });
+  }
+
+  static void showDiagnostic(dynamic context) {
+    Globals.diagnosticcontroller.clear();
+    Globals.diagnosticcontroller.text += "------- System info -------\n";
+    Globals.diagnosticcontroller.text += "Build: ${Globals.buildVersion}\n";
+    Globals.diagnosticcontroller.text += "Platform: ${Platform.version}\n";
+    Globals.diagnosticcontroller.text += "Operating system: ${Platform.operatingSystemVersion}\n";
+    Globals.diagnosticcontroller.text += "Locale: ${Platform.localeName}\n";
+    Globals.diagnosticcontroller.text += "Machine name: ${Platform.localHostname}\n";
+    Globals.diagnosticcontroller.text += "CPU cores: ${Platform.numberOfProcessors}\n";
+    Globals.diagnosticcontroller.text += "Java executable: ${Globals.javapathcontroller.text}\n";
+    Globals.diagnosticcontroller.text += "Java Ram: ${Globals.javaramcontroller.text}\n";
+    Globals.diagnosticcontroller.text += "Java advanced settings: ${Globals.javaAdvSet}\n";
+    Globals.diagnosticcontroller.text += "Java args: ${Globals.javavmcontroller.text}\n";
+    Globals.diagnosticcontroller.text += "Launcher args: ${Globals.javalaunchercontroller.text}\n";
+    Globals.diagnosticcontroller.text += "------- Installed versions -------\n";
+    for (var version in VersionUtils.getMinecraftOfflineVersions(false)) {
+      Globals.diagnosticcontroller.text += "Type: ${version["type"]}, Version: ${version["id"]}\n";
+    }
+    if (Globals.accounts.isNotEmpty) {
+      Globals.diagnosticcontroller.text += "------- Accounts -------\n";
+      for (var account in Globals.accounts) {
+        Globals.diagnosticcontroller.text += "Username: ${account.username}, UUID: ${account.uuid}, Premium: ${account.isPremium}, Slim skin: ${account.isSlimSkin}\n";
+      }
+    }
+    Globals.diagnosticcontroller.text += "------- Game crashlog -------\n";
+    List<String> lines = Globals.consolecontroller.text.split('\n');
+    for (String line in lines) {
+      Globals.diagnosticcontroller.text += line + "\n";
+    }
+
+    WidgetUtils.showPopup(
+      context,
+      AppLocalizations.of(context)!.settings_diagnostic_title,
+      <Widget>[
+        Container(
+          color: Colors.white.withAlpha(128),
+          padding: new EdgeInsets.all(2.0),
+          child: TextField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            controller: Globals.diagnosticcontroller,
+            readOnly: true,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w400,
+              fontFamily: "JetbrainsMono",
+              color: Colors.black,
+            ),
+          ),
+        ),
+      ],
+      [
+        TextButton(
+          child: Text(
+            AppLocalizations.of(context)!.settings_diagnostic_copy,
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: 'Comfortaa',
+              fontWeight: FontWeight.w700,
+              color: ColorUtils.dynamicAccentColor.withAlpha(255),
+            ),
+          ),
+          onPressed: () async {
+            await Clipboard.setData(ClipboardData(text: Globals.diagnosticcontroller.text));
+          },
+        ),
+        TextButton(
+          child: Text(
+            AppLocalizations.of(context)!.console_exit_only,
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: 'Comfortaa',
+              fontWeight: FontWeight.w700,
+              color: ColorUtils.dynamicAccentColor.withAlpha(255),
+            ),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
   }
 
   static void showLoadingCircle(dynamic context) {

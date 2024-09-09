@@ -35,6 +35,9 @@
   "settings_custom_folder": "Directorio del juego",
   "settings_credits_title": "Agradecimientos",
   "settings_credits_content": "Este software ha sido desarrollado utilizando diversas bibliotecas de código abierto: \n\nmaterial_color_utilities, flutter_localization, cached_network_image, simple_3d_renderer, shared_preferences, flutter_markdown, dropdown_button2, bitsdojo_window, flutter_switch, url_launcher, system_theme, flutter_html, text_divider, file_picker, process_run, file_selector, http_parser, provider, archive, encrypt, crypto, image, http, intl, blur, cupertino_icons. \n\nAgradecemos sinceramente a todos los que contribuyeron al desarrollo de estas bibliotecas, haciendo posible la creación de este software.",
+  "settings_diagnostic_title": "Datos de diagnóstico",
+  "settings_diagnostic_copy": "Copiar registro",
+  "settings_clear_cache": "Borrar cachés de skins",
 
   "account_skin_buy_game": "Comprar Minecraft",
   "account_skin_error_msg": "Solo las cuentas premium pueden cambiar la skin.\nConsidera comprar el juego a través de minecraft.net",
