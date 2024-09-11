@@ -38,6 +38,7 @@
   "settings_diagnostic_title": "Datos de diagnóstico",
   "settings_diagnostic_copy": "Copiar registro",
   "settings_clear_cache": "Borrar cachés de skins",
+  "settings_force_classpath": "Forzar el uso de classpath",
 
   "account_skin_buy_game": "Comprar Minecraft",
   "account_skin_error_msg": "Solo las cuentas premium pueden cambiar la skin.\nConsidera comprar el juego a través de minecraft.net",

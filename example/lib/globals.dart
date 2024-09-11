@@ -28,6 +28,7 @@ class Globals {
   static var selectedWindowTheme = '';
   static var accentColor = 0;
   static var fullTransparent = false;
+  static var forceClasspath = false;
 
   //////////////////////////////
   ///// Sezione Variabili //////

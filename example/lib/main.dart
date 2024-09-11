@@ -104,6 +104,7 @@ class MyAppBodyState extends State<MyAppBody> {
     Globals.selectedWindowTheme = prefs.getString('themeSet') ?? getDefaultTheme();
     Globals.showConsole = prefs.getBool('showConsole') ?? true;
     Globals.fullTransparent = prefs.getBool('fullTransparent') ?? false;
+    Globals.forceClasspath = prefs.getBool('forceClasspath') ?? false;
 
     ColorUtils.isMaterial = (Globals.selectedWindowTheme.contains('Material'));
     ColorUtils.reloadColors();
@@ -122,6 +123,7 @@ class MyAppBodyState extends State<MyAppBody> {
     if (!prefs.containsKey('themeSet')) prefs.setString('themeSet', Globals.selectedWindowTheme);
     if (!prefs.containsKey('showConsole')) prefs.setBool('showConsole', Globals.showConsole);
     if (!prefs.containsKey('fullTransparent')) prefs.setBool('fullTransparent', Globals.fullTransparent);
+    if (!prefs.containsKey('forceClasspath')) prefs.setBool('forceClasspath', Globals.forceClasspath);
 
     Window.setEffect(
       effect: effect = getWindowEffect(),

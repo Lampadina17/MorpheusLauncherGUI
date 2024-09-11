@@ -38,6 +38,7 @@
   "settings_diagnostic_title": "Diagnosedaten",
   "settings_diagnostic_copy": "Protokoll kopieren",
   "settings_clear_cache": "Skin-Caches leeren",
+  "settings_force_classpath": "Erzwinge die Verwendung des Classpath",
 
   "account_skin_buy_game": "Minecraft kaufen",
   "account_skin_error_msg": "Nur Premium-Konten können den Skin ändern. Erwägen Sie den Kauf von Minecraft Java Edition auf minecraft.net",

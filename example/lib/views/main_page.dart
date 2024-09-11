@@ -836,6 +836,10 @@ class _MainPageState extends State<MainPage> {
                           "${AccountUtils.getAccount()?.uuid}",
                         ]);
 
+                        if (Globals.forceClasspath) {
+                          args.addAll(['-c']);
+                        }
+
                         if (startOnFirstThread) {
                           args.addAll(["-startOnFirstThread"]);
                         }
@@ -1483,6 +1487,16 @@ class _MainPageState extends State<MainPage> {
                           await prefs.setString("javaLauncherArgs", Globals.javalaunchercontroller.text);
                         },
                       ),
+                      /** Modalità classpath */
+                      WidgetUtils.buildSettingSwitchItem(
+                        AppLocalizations.of(context)!.settings_force_classpath,
+                        "forceClasspath",
+                        Icons.fork_left_rounded,
+                        Colors.transparent,
+                        Colors.transparent,
+                        Globals.forceClasspath,
+                        (value) => setState(() => Globals.forceClasspath = value),
+                      ),
                     ],
                   ),
                 ),
@@ -1557,6 +1571,7 @@ class _MainPageState extends State<MainPage> {
               /** Bottone per pulire la cache */
               WidgetUtils.buildTextButton(
                 Colors.redAccent,
+                Colors.white,
                 () async {
                   await DefaultCacheManager().emptyCache();
                 },
@@ -1566,6 +1581,7 @@ class _MainPageState extends State<MainPage> {
               /** Dati di diagnostica */
               WidgetUtils.buildTextButton(
                 ColorUtils.dynamicSecondaryForegroundColor,
+                ColorUtils.primaryFontColor,
                 () {
                   WidgetUtils.showDiagnostic(context);
                 },
@@ -2154,7 +2170,7 @@ class WidgetUtils {
     );
   }
 
-  static Widget buildTextButton(Color color, VoidCallback onPressed, String text) {
+  static Widget buildTextButton(Color color, Color textColor, VoidCallback onPressed, String text) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(7, 7, 0, 7),
       child: GestureDetector(
@@ -2172,7 +2188,7 @@ class WidgetUtils {
                 child: Center(
                   child: Text(
                     text,
-                    style: customTextStyle(16, FontWeight.w500, ColorUtils.primaryFontColor),
+                    style: customTextStyle(16, FontWeight.w500, textColor),
                   ),
                 ),
               ),
@@ -2421,6 +2437,9 @@ class WidgetUtils {
     Globals.diagnosticcontroller.text += "Launcher args: ${Globals.javalaunchercontroller.text}\n";
     Globals.diagnosticcontroller.text += "------- Installed versions -------\n";
     for (var version in VersionUtils.getMinecraftOfflineVersions(false)) {
+      Globals.diagnosticcontroller.text += "Type: ${version["type"]}, Version: ${version["id"]}\n";
+    }
+    for (var version in VersionUtils.getMinecraftOfflineVersions(true)) {
       Globals.diagnosticcontroller.text += "Type: ${version["type"]}, Version: ${version["id"]}\n";
     }
     if (Globals.accounts.isNotEmpty) {
