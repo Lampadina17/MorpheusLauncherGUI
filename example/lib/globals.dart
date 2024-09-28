@@ -64,6 +64,9 @@ class Globals {
   static late var vanillaNewsResponse = null;
 
   static var hapticFeedback = MacosHapticFeedback();
+
+  /** Incompatible versions blacklist */
+  static late var incompatibleVersions = null;
 }
 
 class Urls {
@@ -605,6 +608,56 @@ class VersionUtils {
 
     return versions;
   }
+
+  static Future<List<ForgeCompatibility>> fetchIncompatibleVersions() async {
+    final url = '${Urls.morpheusBaseURL}/downloads/known-incompatible.json';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonData = json.decode(response.body);
+      List<ForgeCompatibility> incompatibleVersions = [];
+
+      jsonData.forEach((version, data) {
+        if (data.containsKey('forge') && data['forge'].containsKey('compatible')) {
+          String value = data['forge']['compatible'];
+          var isCompatible = !value.contains("false");
+          incompatibleVersions.add(ForgeCompatibility(version, "forge", isCompatible));
+        }
+      });
+
+      return incompatibleVersions;
+    } else {
+      throw Exception('Errore nel download del JSON: ${response.statusCode}');
+    }
+  }
+
+  static bool isCompatible(String id) {
+    bool isForge = id.toLowerCase().contains("forge");
+    bool isCompatible = true;
+    if (isForge) {
+      String version = id.split("-")[0];
+      if (Globals.incompatibleVersions != null) {
+        Globals.incompatibleVersions.forEach((result) {
+          if (result.version == version && result.type == "forge") {
+            isCompatible = false;
+          }
+        });
+      }
+    }
+
+    return isCompatible;
+  }
+}
+
+class ForgeCompatibility {
+  final String version;
+  final String type;
+  final bool isCompatible;
+
+  ForgeCompatibility(this.version, this.type, this.isCompatible);
+
+  @override
+  String toString() => 'Version: $version, Type: $type, Compatible: $isCompatible';
 }
 
 class News {

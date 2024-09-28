@@ -135,6 +135,11 @@ class MyAppBodyState extends State<MyAppBody> {
     }
 
     try {
+      Globals.incompatibleVersions = await VersionUtils.fetchIncompatibleVersions();
+    } catch (e) {
+      print(e);
+    }
+    try {
       Globals.pinnedVersions = await VersionUtils.getPinnedVersions();
     } catch (e) {
       print(e);
@@ -251,7 +256,7 @@ Widget drawTitleCustomBar() {
         Material(
           color: Colors.transparent,
           child: WidgetUtils.backShadow(
-            Text(Globals.windowTitle, style: WidgetUtils.customTextStyle(12, FontWeight.w400, Colors.white)),
+            Text(Globals.windowTitle, style: WidgetUtils.customTextStyle(12, FontWeight.w400, ColorUtils.primaryFontColor)),
             40.0,
             ColorUtils.defaultShadowColor,
           ),
@@ -299,7 +304,7 @@ class _WindowButtonsState extends State<WindowButtons> {
   }
 
   final buttonColors = WindowButtonColors(
-    iconNormal: Colors.white,
+    iconNormal: ColorUtils.primaryFontColor,
     mouseOver: const Color(0x66FFFFFF),
     mouseDown: const Color(0xCCFFFFFF),
     iconMouseOver: Colors.white,
@@ -307,7 +312,7 @@ class _WindowButtonsState extends State<WindowButtons> {
   );
 
   final closeButtonColors = WindowButtonColors(
-    iconNormal: Colors.white,
+    iconNormal: ColorUtils.primaryFontColor,
     mouseOver: const Color(0xFFD32F2F),
     mouseDown: const Color(0xFFB71C1C),
     iconMouseOver: Colors.white,

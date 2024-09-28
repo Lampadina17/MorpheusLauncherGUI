@@ -11,6 +11,7 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:image/image.dart' as img;
@@ -27,7 +28,6 @@ import 'package:system_theme/system_theme.dart';
 import 'package:text_divider/text_divider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:util_simple_3d/util_simple_3d.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -189,7 +189,7 @@ class _MainPageState extends State<MainPage> {
                                           WidgetUtils.showMessageDialog(
                                             context,
                                             AppLocalizations.of(context)!.account_skin_uploader_title,
-                                            "${await uploadSkin(context, "slim", AccountUtils.getAccount()?.accessToken, file.path.replaceAll("\\", "/"))}",
+                                            "${await uploadSkin(context, "slim", AccountUtils.getAccount()!, file.path.replaceAll("\\", "/"))}",
                                             () => Navigator.pop(context),
                                           );
                                         }
@@ -212,7 +212,7 @@ class _MainPageState extends State<MainPage> {
                                           WidgetUtils.showMessageDialog(
                                             context,
                                             AppLocalizations.of(context)!.account_skin_uploader_title,
-                                            "${await uploadSkin(context, "classic", AccountUtils.getAccount()?.accessToken, file.path.replaceAll("\\", "/"))}",
+                                            "${await uploadSkin(context, "classic", AccountUtils.getAccount()!, file.path.replaceAll("\\", "/"))}",
                                             () => Navigator.pop(context),
                                           );
                                         }
@@ -538,6 +538,7 @@ class _MainPageState extends State<MainPage> {
                 version["type"],
                 version["id"],
                 "",
+                VersionUtils.isCompatible(version["id"]),
               ),
             ],
           /** Divider News/Changelog mojang */
@@ -667,8 +668,8 @@ class _MainPageState extends State<MainPage> {
 
         /** Ultime versioni (ONLINE) */
         if (Globals.vanillaVersionsResponse != null) ...[
-          buildVanillaItem(AppLocalizations.of(context)!.vanilla_release_title, Globals.vanillaVersionsResponse["latest"]["release"], ""),
-          buildVanillaItem(AppLocalizations.of(context)!.vanilla_snapshot_title, Globals.vanillaVersionsResponse["latest"]["snapshot"], ""),
+          buildVanillaItem(AppLocalizations.of(context)!.vanilla_release_title, Globals.vanillaVersionsResponse["latest"]["release"], "", true),
+          buildVanillaItem(AppLocalizations.of(context)!.vanilla_snapshot_title, Globals.vanillaVersionsResponse["latest"]["snapshot"], "", true),
           /** Separatore */
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
@@ -680,12 +681,13 @@ class _MainPageState extends State<MainPage> {
 
         /** Lista completa delle versioni solo vanilla (misto) */
         for (var version in VersionUtils.getMinecraftVersions(false))
-          if ((version["type"] == "release" && Globals.showOnlyReleases) || !Globals.showOnlyReleases) buildVanillaItem(version["type"], version["id"], version["releaseTime"]),
+          if ((version["type"] == "release" && Globals.showOnlyReleases) || !Globals.showOnlyReleases)
+            buildVanillaItem(version["type"], version["id"], version["releaseTime"], true),
       ],
     );
   }
 
-  Widget buildVanillaItem(String gameType, String gameVersion, String releaseDate) {
+  Widget buildVanillaItem(String gameType, String gameVersion, String releaseDate, bool compatible) {
     return Padding(
       padding: EdgeInsets.fromLTRB(0, 2, 0, 2),
       child: Container(
@@ -698,9 +700,17 @@ class _MainPageState extends State<MainPage> {
           borderRadius: BorderRadius.circular(Globals.borderRadius),
           child: Stack(
             children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+                child: Icon(
+                  compatible ? Icons.check_circle_rounded : Icons.not_interested_rounded,
+                  color: compatible ? Colors.lightGreenAccent : Colors.redAccent,
+                ),
+              ),
+
               /** Info delle Versione */
               Padding(
-                padding: EdgeInsets.fromLTRB(12, releaseDate != "" ? 5 : 14, 10, 0),
+                padding: EdgeInsets.fromLTRB(42, releaseDate != "" ? 5 : 14, 10, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -757,25 +767,61 @@ class _MainPageState extends State<MainPage> {
                         List<String> args = [];
 
                         if (gameType.contains(AppLocalizations.of(context)!.vanilla_release_title)) {
+                          /* When game type is flagged as latest, the launcher will understand to download the latest release */
                           gameVersion = "latest";
                         } else if (gameType.contains(AppLocalizations.of(context)!.vanilla_snapshot_title)) {
+                          /* Same as latest but even with snapshot */
                           gameVersion = "snapshot";
                         } else if (gameType.toLowerCase().contains("fabric") || gameVersion.toLowerCase().contains("fabric")) {
-                          var fabricVersion = Globals.fabricLoaderVersionsResponse[0]["version"];
+                          /* check if fabric is already installed, if not tells to launcher to install fabric */
                           if (gameVersion.toLowerCase().startsWith("fabric")) {
+                            /* Recognize what minecraft version it is, by parsing version name */
                             realGameVersion = gameVersion.split("-")[3];
                           } else {
+                            var fabricVersion = Globals.fabricLoaderVersionsResponse[0]["version"];
                             gameVersion = "fabric-loader-$fabricVersion-$realGameVersion";
                           }
                           isModded = true;
-                        } else if (gameVersion.toLowerCase().contains("optifine")) {
-                          realGameVersion = gameVersion.split("-")[0]; // Optifine
+                        } else if (gameType.toLowerCase().contains("optifine") || gameVersion.toLowerCase().contains("optifine")) {
+                          /* check if the user is trying to install optifine, if yes tell the launcher to install optifine */
+                          if (gameType.toLowerCase().contains("optifine")) {
+                            realGameVersion = gameVersion.toLowerCase(); /* Recognize easily the minecraft version */
+                            for (var version in Globals.optifineVersions) {
+                              if (version.split("-")[0] == realGameVersion) {
+                                /* Find what optifines are available to download */
+                                gameVersion = version;
+                              }
+                            }
+                          } else {
+                            realGameVersion = gameVersion.toLowerCase().split("-")[0]; /* Java installer need always to know what minecraft you are launching */
+                          }
                           isModded = true;
-                        } else if (gameVersion.toLowerCase().contains("forge")) {
-                          realGameVersion = gameVersion.split("-")[0]; // Forge
+                        } else if (gameType.toLowerCase().contains("optiforge") || gameVersion.toLowerCase().contains("optiforge")) {
+                          if (gameType.toLowerCase().contains("optiforge")) {
+                            realGameVersion = gameVersion.toLowerCase();
+                            for (var version in Globals.forgeVersions) {
+                              if (version.split("-")[0] == realGameVersion) {
+                                gameVersion = version.toString().replaceAll("forge", "optiforge");
+                              }
+                            }
+                          } else {
+                            realGameVersion = gameVersion.toLowerCase().split("-")[0];
+                          }
                           isModded = true;
-                          // Workaround per la 1.6.4
                           args.add("-Dfml.ignoreInvalidMinecraftCertificates=true");
+                        } else if (gameType.toLowerCase().contains("forge") || gameVersion.toLowerCase().contains("forge")) {
+                          if (gameType.toLowerCase().contains("forge")) {
+                            realGameVersion = gameVersion.toLowerCase();
+                            for (var version in Globals.forgeVersions) {
+                              if (version.split("-")[0] == realGameVersion) {
+                                gameVersion = version;
+                              }
+                            }
+                          } else {
+                            realGameVersion = gameVersion.toLowerCase().split("-")[0];
+                          }
+                          isModded = true;
+                          args.add("-Dfml.ignoreInvalidMinecraftCertificates=true"); // Workaround for 1.6.4
                         }
 
                         // Installa java automaticamente
@@ -925,7 +971,7 @@ class _MainPageState extends State<MainPage> {
           ),
 
         /** Lista completa delle versioni moddate istallate */
-        for (var version in VersionUtils.getMinecraftVersions(true)) buildVanillaItem(version["type"], version["id"], ""),
+        for (var version in VersionUtils.getMinecraftVersions(true)) buildVanillaItem(version["type"], version["id"], "", VersionUtils.isCompatible(version["id"])),
 
         /** Lista delle optifine installabili */
         if (Globals.optifineVersions != null) ...[
@@ -941,7 +987,7 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
           ),
-          for (var version in Globals.optifineVersions) buildVanillaItem("Optifine", version, ""),
+          for (var version in Globals.optifineVersions) buildVanillaItem("Optifine", version.split("-")[0], "", true),
         ],
 
         /** Lista dei forge installabili */
@@ -958,7 +1004,24 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
           ),
-          for (var version in Globals.forgeVersions) buildVanillaItem("Forge", version, ""),
+          for (var version in Globals.forgeVersions) buildVanillaItem("OptiForge", version.split("-")[0], "", true),
+        ],
+
+        /** Lista dei forge installabili */
+        if (Globals.forgeVersions != null) ...[
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            child: TextDivider(
+              color: ColorUtils.secondaryFontColor.withAlpha(80),
+              thickness: 2,
+              text: Text(
+                AppLocalizations.of(context)!.modded_forge_download_available,
+                textAlign: TextAlign.center,
+                style: WidgetUtils.customTextStyle(20, FontWeight.w300, ColorUtils.primaryFontColor),
+              ),
+            ),
+          ),
+          for (var version in Globals.forgeVersions) buildVanillaItem("Forge", version.split("-")[0], "", true),
         ],
 
         /** Lista dei fabric installabili */
@@ -975,7 +1038,7 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
           ),
-          for (var version in Globals.fabricGameVersionsResponse) buildVanillaItem("Fabric", version["version"], ""),
+          for (var version in Globals.fabricGameVersionsResponse) buildVanillaItem("Fabric", version["version"], "", true),
         ],
       ],
     );
@@ -1004,9 +1067,15 @@ class _MainPageState extends State<MainPage> {
         WidgetUtils.buildSettingSwitchItem(
           AppLocalizations.of(context)!.settings_dark_mode_switch,
           "darkModeTheme",
-          Icons.invert_colors,
-          ColorUtils.dynamicPrimaryForegroundColor,
-          ColorUtils.defaultShadowColor,
+          CustomSettingSwitchStyle(
+            icon: Icons.invert_colors_rounded,
+            bgColor: ColorUtils.dynamicPrimaryForegroundColor,
+            shadowColor: ColorUtils.defaultShadowColor,
+            fontColor: ColorUtils.primaryFontColor,
+            toggleColor: ColorUtils.isMaterial ? ColorUtils.dynamicPrimaryForegroundColor : Colors.white,
+            activeColor: ColorUtils.dynamicAccentColor,
+            inactiveColor: ColorUtils.dynamicSecondaryForegroundColor,
+          ),
           Globals.darkModeTheme,
           (value) {
             setState(() => Globals.darkModeTheme = value);
@@ -1291,9 +1360,15 @@ class _MainPageState extends State<MainPage> {
           WidgetUtils.buildSettingSwitchItem(
             "Disable background tinting",
             "fullTransparent",
-            Icons.format_paint,
-            ColorUtils.dynamicPrimaryForegroundColor,
-            ColorUtils.defaultShadowColor,
+            CustomSettingSwitchStyle(
+              icon: Icons.format_paint_rounded,
+              bgColor: ColorUtils.dynamicPrimaryForegroundColor,
+              shadowColor: ColorUtils.defaultShadowColor,
+              fontColor: ColorUtils.primaryFontColor,
+              toggleColor: ColorUtils.isMaterial ? ColorUtils.dynamicPrimaryForegroundColor : Colors.white,
+              activeColor: ColorUtils.dynamicAccentColor,
+              inactiveColor: ColorUtils.dynamicSecondaryForegroundColor,
+            ),
             Globals.fullTransparent,
             (value) {
               setState(() => Globals.fullTransparent = value);
@@ -1319,9 +1394,15 @@ class _MainPageState extends State<MainPage> {
         WidgetUtils.buildSettingSwitchItem(
           AppLocalizations.of(context)!.settings_only_release_switch,
           "showOnlyReleases",
-          Icons.widgets,
-          ColorUtils.dynamicPrimaryForegroundColor,
-          ColorUtils.defaultShadowColor,
+          CustomSettingSwitchStyle(
+            icon: Icons.widgets_rounded,
+            bgColor: ColorUtils.dynamicPrimaryForegroundColor,
+            shadowColor: ColorUtils.defaultShadowColor,
+            fontColor: ColorUtils.primaryFontColor,
+            toggleColor: ColorUtils.isMaterial ? ColorUtils.dynamicPrimaryForegroundColor : Colors.white,
+            activeColor: ColorUtils.dynamicAccentColor,
+            inactiveColor: ColorUtils.dynamicSecondaryForegroundColor,
+          ),
           Globals.showOnlyReleases,
           (value) => setState(() => Globals.showOnlyReleases = value),
         ),
@@ -1330,9 +1411,15 @@ class _MainPageState extends State<MainPage> {
         WidgetUtils.buildSettingSwitchItem(
           AppLocalizations.of(context)!.settings_console_switch,
           "showConsole",
-          Icons.terminal,
-          ColorUtils.dynamicPrimaryForegroundColor,
-          ColorUtils.defaultShadowColor,
+          CustomSettingSwitchStyle(
+            icon: Icons.terminal_rounded,
+            bgColor: ColorUtils.dynamicPrimaryForegroundColor,
+            shadowColor: ColorUtils.defaultShadowColor,
+            fontColor: ColorUtils.primaryFontColor,
+            toggleColor: ColorUtils.isMaterial ? ColorUtils.dynamicPrimaryForegroundColor : Colors.white,
+            activeColor: ColorUtils.dynamicAccentColor,
+            inactiveColor: ColorUtils.dynamicSecondaryForegroundColor,
+          ),
           Globals.showConsole,
           (value) => setState(() => Globals.showConsole = value),
         ),
@@ -1344,9 +1431,15 @@ class _MainPageState extends State<MainPage> {
               WidgetUtils.buildSettingSwitchItem(
                 AppLocalizations.of(context)!.settings_java_advanced_settings,
                 "javaAdvSet",
-                MorpheusIcons.java,
-                Colors.transparent,
-                Colors.transparent,
+                CustomSettingSwitchStyle(
+                  icon: MorpheusIcons.java,
+                  bgColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  fontColor: ColorUtils.primaryFontColor,
+                  toggleColor: ColorUtils.isMaterial ? ColorUtils.dynamicPrimaryForegroundColor : Colors.white,
+                  activeColor: ColorUtils.dynamicAccentColor,
+                  inactiveColor: ColorUtils.dynamicSecondaryForegroundColor,
+                ),
                 Globals.javaAdvSet,
                 (value) => setState(() => Globals.javaAdvSet = value),
               ),
@@ -1491,9 +1584,15 @@ class _MainPageState extends State<MainPage> {
                       WidgetUtils.buildSettingSwitchItem(
                         AppLocalizations.of(context)!.settings_force_classpath,
                         "forceClasspath",
-                        Icons.fork_left_rounded,
-                        Colors.transparent,
-                        Colors.transparent,
+                        CustomSettingSwitchStyle(
+                          icon: Icons.fork_left_rounded,
+                          bgColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          fontColor: ColorUtils.primaryFontColor,
+                          toggleColor: ColorUtils.isMaterial ? ColorUtils.dynamicPrimaryForegroundColor : Colors.white,
+                          activeColor: ColorUtils.dynamicAccentColor,
+                          inactiveColor: ColorUtils.dynamicSecondaryForegroundColor,
+                        ),
                         Globals.forceClasspath,
                         (value) => setState(() => Globals.forceClasspath = value),
                       ),
@@ -1512,9 +1611,15 @@ class _MainPageState extends State<MainPage> {
               WidgetUtils.buildSettingSwitchItem(
                 AppLocalizations.of(context)!.settings_custom_folder_title,
                 "customFolderSet",
-                Icons.folder,
-                Colors.transparent,
-                Colors.transparent,
+                CustomSettingSwitchStyle(
+                  icon: Icons.folder_rounded,
+                  bgColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  fontColor: ColorUtils.primaryFontColor,
+                  toggleColor: ColorUtils.isMaterial ? ColorUtils.dynamicPrimaryForegroundColor : Colors.white,
+                  activeColor: ColorUtils.dynamicAccentColor,
+                  inactiveColor: ColorUtils.dynamicSecondaryForegroundColor,
+                ),
                 Globals.customFolderSet,
                 (value) async => {
                   setState(() => Globals.customFolderSet = value),
@@ -1570,7 +1675,7 @@ class _MainPageState extends State<MainPage> {
             children: [
               /** Bottone per pulire la cache */
               WidgetUtils.buildTextButton(
-                Colors.redAccent,
+                Colors.red.withAlpha(160),
                 Colors.white,
                 () async {
                   await DefaultCacheManager().emptyCache();
@@ -1970,21 +2075,41 @@ class AccountUtils {
   }
 }
 
+class CustomSettingSwitchStyle {
+  final IconData icon;
+  final Color bgColor;
+  final Color shadowColor;
+  final Color fontColor;
+  final Color toggleColor;
+  final Color activeColor;
+  final Color inactiveColor;
+
+  CustomSettingSwitchStyle({
+    required this.icon,
+    required this.bgColor,
+    required this.shadowColor,
+    required this.fontColor,
+    required this.toggleColor,
+    required this.activeColor,
+    required this.inactiveColor,
+  });
+}
+
 class WidgetUtils {
   //////////////////////////////////
   /////////// SETTINGS /////////////
   //////////////////////////////////
 
   /** Switch impostazioni */
-  static Widget buildSettingSwitchItem(String name, String name2, IconData icon, dynamic bgcolor, dynamic shadowcolor, var set, Function(dynamic value) callback) {
+  static Widget buildSettingSwitchItem(String name, String name2, CustomSettingSwitchStyle style, var set, Function(dynamic value) callback) {
     return Padding(
       padding: EdgeInsets.fromLTRB(0, 2, 0, 2),
       child: Container(
         height: 55,
         child: Material(
           elevation: 15,
-          color: bgcolor,
-          shadowColor: shadowcolor,
+          color: style.bgColor,
+          shadowColor: style.shadowColor,
           borderRadius: BorderRadius.circular(Globals.borderRadius),
           child: Stack(
             children: [
@@ -2000,8 +2125,8 @@ class WidgetUtils {
                         shadowColor: ColorUtils.defaultShadowColor,
                         borderRadius: BorderRadius.circular(10),
                         child: Icon(
-                          icon,
-                          color: ColorUtils.primaryFontColor,
+                          style.icon,
+                          color: style.fontColor,
                           size: 26,
                         ),
                       ),
@@ -2015,7 +2140,7 @@ class WidgetUtils {
                       children: [
                         Text(
                           name,
-                          style: customTextStyle(16, FontWeight.w500, ColorUtils.primaryFontColor),
+                          style: customTextStyle(16, FontWeight.w500, style.fontColor),
                         ),
                       ],
                     ),
@@ -2042,9 +2167,9 @@ class WidgetUtils {
                           width: 50,
                           height: 25,
                           toggleSize: 18.0,
-                          toggleColor: ColorUtils.isMaterial ? ColorUtils.dynamicPrimaryForegroundColor : Colors.white,
-                          activeColor: ColorUtils.dynamicAccentColor,
-                          inactiveColor: ColorUtils.dynamicSecondaryForegroundColor,
+                          toggleColor: style.toggleColor,
+                          activeColor: style.activeColor,
+                          inactiveColor: style.inactiveColor,
                           value: set,
                           onToggle: (value) async {
                             callback(value);

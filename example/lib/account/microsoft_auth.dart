@@ -8,6 +8,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:morpheus_launcher_gui/account/account_utils.dart';
 import 'package:morpheus_launcher_gui/globals.dart';
 
 final client_id = decrypt('xPeIONFluJktnyRqRW2qzlGSocmqb0z4ge9Uo1AF980q5FQNbG8hgtylIv24tgeP', 'FPzGDUVvU4L?*;j+x`XrGZUQJ)rr/M&#');
@@ -172,11 +173,11 @@ Future<dynamic> fetchMinecraftProfile(dynamic context, String token) async {
   return "[MC]: ${AppLocalizations.of(context)!.account_get_fail}: ${response.statusCode} ${json.decode(response.body)}";
 }
 
-Future<String> uploadSkin(dynamic context, String variant, dynamic token, String filePath) async {
+Future<String> uploadSkin(dynamic context, String variant, Account account, String filePath) async {
   final url = Uri.parse(Urls.mcSkinURL);
   final request = http.MultipartRequest('POST', url);
 
-  request.headers['Authorization'] = 'Bearer $token';
+  request.headers['Authorization'] = 'Bearer ${account.accessToken}';
 
   // Add variant parameter to the request
   request.fields['variant'] = variant;
