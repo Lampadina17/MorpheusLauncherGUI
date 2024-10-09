@@ -7,7 +7,6 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:macos_haptic_feedback/macos_haptic_feedback.dart';
 import 'package:material_color_utilities/material_color_utilities.dart';
 import 'package:morpheus_launcher_gui/account/account_utils.dart';
 import 'package:morpheus_launcher_gui/account/encryption.dart';
@@ -15,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:system_theme/system_theme.dart';
 
 class Globals {
-  static final buildVersion = "Ver 2.2.0";
+  static final buildVersion = "Ver 2.2.1";
   static final windowTitle = "Morpheus Launcher";
   static final borderRadius = 14.0;
 
@@ -62,8 +61,6 @@ class Globals {
   /** Vanilla */
   static late var vanillaVersionsResponse = null;
   static late var vanillaNewsResponse = null;
-
-  static var hapticFeedback = MacosHapticFeedback();
 
   /** Incompatible versions blacklist */
   static late var incompatibleVersions = null;
@@ -609,19 +606,41 @@ class VersionUtils {
     return versions;
   }
 
-  static Future<List<ForgeCompatibility>> fetchIncompatibleVersions() async {
+  static Future<List<VersionCompatibility>> fetchIncompatibleVersions() async {
     final url = '${Urls.morpheusBaseURL}/downloads/known-incompatible.json';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonData = json.decode(response.body);
-      List<ForgeCompatibility> incompatibleVersions = [];
+      List<VersionCompatibility> incompatibleVersions = [];
 
       jsonData.forEach((version, data) {
-        if (data.containsKey('forge') && data['forge'].containsKey('compatible')) {
-          String value = data['forge']['compatible'];
-          var isCompatible = !value.contains("false");
-          incompatibleVersions.add(ForgeCompatibility(version, "forge", isCompatible));
+        if (data['forge'] != null) {
+          final forgeArch = data['forge']['arch'];
+          if (forgeArch['x64'] != null) {
+            incompatibleVersions.add(VersionCompatibility(version, "forge", 'x64'));
+          }
+          if (forgeArch['arm64'] != null) {
+            incompatibleVersions.add(VersionCompatibility(version, "forge", 'arm64'));
+          }
+        }
+        if (data['optiforge'] != null) {
+          final forgeArch = data['optiforge']['arch'];
+          if (forgeArch['x64'] != null) {
+            incompatibleVersions.add(VersionCompatibility(version, "optiforge", 'x64'));
+          }
+          if (forgeArch['arm64'] != null) {
+            incompatibleVersions.add(VersionCompatibility(version, "optiforge", 'arm64'));
+          }
+        }
+        if (data['vanilla'] != null) {
+          final vanillaArch = data['vanilla']['arch'];
+          if (vanillaArch['x64'] != null) {
+            incompatibleVersions.add(VersionCompatibility(version, "release", 'x64'));
+          }
+          if (vanillaArch['arm64'] != null) {
+            incompatibleVersions.add(VersionCompatibility(version, "release", 'arm64'));
+          }
         }
       });
 
@@ -631,33 +650,32 @@ class VersionUtils {
     }
   }
 
-  static bool isCompatible(String id) {
-    bool isForge = id.toLowerCase().contains("forge");
+  static bool isCompatible(String type, String id) {
     bool isCompatible = true;
-    if (isForge) {
-      String version = id.split("-")[0];
-      if (Globals.incompatibleVersions != null) {
-        Globals.incompatibleVersions.forEach((result) {
-          if (result.version == version && result.type == "forge") {
-            isCompatible = false;
-          }
-        });
-      }
+
+    RegExp regex = RegExp(r'on "[a-zA-Z]+_([a-zA-Z0-9]+)"');
+    RegExpMatch? match = regex.firstMatch(Platform.version);
+    String os_arch = match != null ? match.group(1)! : '';
+
+    if (Globals.incompatibleVersions != null) {
+      Globals.incompatibleVersions.forEach((result) {
+        if (result.version == id && result.type == type.toLowerCase() && result.arch == os_arch) isCompatible = false;
+      });
     }
 
     return isCompatible;
   }
 }
 
-class ForgeCompatibility {
+class VersionCompatibility {
   final String version;
   final String type;
-  final bool isCompatible;
+  final String arch;
 
-  ForgeCompatibility(this.version, this.type, this.isCompatible);
+  VersionCompatibility(this.version, this.type, this.arch);
 
   @override
-  String toString() => 'Version: $version, Type: $type, Compatible: $isCompatible';
+  String toString() => 'Version: $version, Type: $type, Arch: $arch';
 }
 
 class News {

@@ -452,7 +452,7 @@ class _MainPageState extends State<MainPage> {
         }
       },
       child: MouseRegion(
-        onEnter: (e) => {if (Platform.isMacOS) Globals.hapticFeedback.generic()},
+        onEnter: (e) => {},
         child: Container(
           height: 70,
           width: 60,
@@ -483,7 +483,7 @@ class _MainPageState extends State<MainPage> {
         });
       },
       child: MouseRegion(
-        onEnter: (e) => {if (Platform.isMacOS) Globals.hapticFeedback.generic()},
+        onEnter: (e) => {},
         child: Container(
           height: 80,
           width: 35,
@@ -538,7 +538,7 @@ class _MainPageState extends State<MainPage> {
                 version["type"],
                 version["id"],
                 "",
-                VersionUtils.isCompatible(version["id"]),
+                VersionUtils.isCompatible(version["type"], version["id"]),
               ),
             ],
           /** Divider News/Changelog mojang */
@@ -682,7 +682,7 @@ class _MainPageState extends State<MainPage> {
         /** Lista completa delle versioni solo vanilla (misto) */
         for (var version in VersionUtils.getMinecraftVersions(false))
           if ((version["type"] == "release" && Globals.showOnlyReleases) || !Globals.showOnlyReleases)
-            buildVanillaItem(version["type"], version["id"], version["releaseTime"], true),
+            buildVanillaItem(version["type"], version["id"], version["releaseTime"], VersionUtils.isCompatible(version["type"], version["id"])),
       ],
     );
   }
@@ -971,7 +971,7 @@ class _MainPageState extends State<MainPage> {
           ),
 
         /** Lista completa delle versioni moddate istallate */
-        for (var version in VersionUtils.getMinecraftVersions(true)) buildVanillaItem(version["type"], version["id"], "", VersionUtils.isCompatible(version["id"])),
+        for (var version in VersionUtils.getMinecraftVersions(true)) buildVanillaItem(version["type"], version["id"], "", VersionUtils.isCompatible(version["type"], version["id"])),
 
         /** Lista delle optifine installabili */
         if (Globals.optifineVersions != null) ...[
@@ -987,7 +987,7 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
           ),
-          for (var version in Globals.optifineVersions) buildVanillaItem("Optifine", version.split("-")[0], "", true),
+          for (var version in Globals.optifineVersions) buildVanillaItem("Optifine", version.split("-")[0], "", VersionUtils.isCompatible("Optifine", version.split("-")[0])),
         ],
 
         /** Lista dei forge installabili */
@@ -1004,7 +1004,7 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
           ),
-          for (var version in Globals.forgeVersions) buildVanillaItem("OptiForge", version.split("-")[0], "", true),
+          for (var version in Globals.forgeVersions) buildVanillaItem("OptiForge", version.split("-")[0], "", VersionUtils.isCompatible("OptiForge", version.split("-")[0])),
         ],
 
         /** Lista dei forge installabili */
@@ -1021,7 +1021,7 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
           ),
-          for (var version in Globals.forgeVersions) buildVanillaItem("Forge", version.split("-")[0], "", true),
+          for (var version in Globals.forgeVersions) buildVanillaItem("Forge", version.split("-")[0], "", VersionUtils.isCompatible("Forge", version.split("-")[0])),
         ],
 
         /** Lista dei fabric installabili */
@@ -1146,7 +1146,7 @@ class _MainPageState extends State<MainPage> {
                       child: Row(
                         children: [
                           MouseRegion(
-                            onEnter: (e) => {if (Platform.isMacOS) Globals.hapticFeedback.generic()},
+                            onEnter: (e) => {},
                             child: GestureDetector(
                               onTap: () async => {
                                 Globals.accentColor = 0,
@@ -1189,7 +1189,7 @@ class _MainPageState extends State<MainPage> {
                               width: 2,
                             ),
                             MouseRegion(
-                              onEnter: (e) => {if (Platform.isMacOS) Globals.hapticFeedback.generic()},
+                              onEnter: (e) => {},
                               child: GestureDetector(
                                 onTap: () async => {
                                   Globals.accentColor = i,
@@ -1276,7 +1276,7 @@ class _MainPageState extends State<MainPage> {
                       shadowColor: ColorUtils.defaultShadowColor,
                       borderRadius: BorderRadius.circular(Globals.borderRadius),
                       child: MouseRegion(
-                        onEnter: (e) => {if (Platform.isMacOS) Globals.hapticFeedback.generic()},
+                        onEnter: (e) => {},
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton2<String>(
                             isExpanded: true,
@@ -1314,7 +1314,7 @@ class _MainPageState extends State<MainPage> {
                                 );
                               }
                               setState(() => effect = effect);
-                              if (Platform.isMacOS) Globals.hapticFeedback.generic();
+                              ;
                             },
                             buttonStyleData: ButtonStyleData(
                               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -2161,8 +2161,8 @@ class WidgetUtils {
                       // Globals.defaultShadowColor,
                       borderRadius: BorderRadius.circular(10),
                       child: MouseRegion(
-                        onEnter: (e) => {if (Platform.isMacOS) Globals.hapticFeedback.generic()},
-                        onExit: (e) => {if (Platform.isMacOS) Globals.hapticFeedback.generic()},
+                        onEnter: (e) => {},
+                        onExit: (e) => {},
                         child: FlutterSwitch(
                           width: 50,
                           height: 25,
@@ -2176,7 +2176,7 @@ class WidgetUtils {
                             SharedPreferences prefs = await SharedPreferences.getInstance();
                             await prefs.setBool(name2, value);
                             set = value;
-                            if (Platform.isMacOS) Globals.hapticFeedback.generic();
+                            ;
                           },
                         ),
                       ),
@@ -2270,7 +2270,7 @@ class WidgetUtils {
         onTap: onPressed,
         child: backShadow(
           MouseRegion(
-            onEnter: (e) => {if (Platform.isMacOS) Globals.hapticFeedback.generic()},
+            onEnter: (e) => {},
             child: Material(
               elevation: 15,
               color: color,
@@ -2302,7 +2302,7 @@ class WidgetUtils {
         onTap: onPressed,
         child: backShadow(
           MouseRegion(
-            onEnter: (e) => {if (Platform.isMacOS) Globals.hapticFeedback.generic()},
+            onEnter: (e) => {},
             child: Material(
               elevation: 15,
               color: color,
